@@ -14,6 +14,7 @@ class Kicker(models.Model):
     _name = 'kicker.kicker'
     _descrption = 'Kicker'
     _order = 'nickname'
+    _rec_name = 'nickname'
 
     def _default_token(self):
         return str(uuid.uuid4())
