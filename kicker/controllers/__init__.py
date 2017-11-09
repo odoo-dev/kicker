@@ -1,1 +1,1 @@
-import kicker
+from . import kicker
