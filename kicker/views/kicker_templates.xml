@@ -8,7 +8,7 @@
         <script type="text/javascript" src="/bus/static/src/js/bus.js"></script>
     </template>
 
-	<template id="layout" name="Web layout">&lt;!DOCTYPE html&gt;
+    <template id="layout" name="Web layout">&lt;!DOCTYPE html&gt;
         <html>
             <head>
                 <meta charset="utf-8"/>
@@ -34,10 +34,12 @@
     <!--
         App Pages Templates
     -->
-    <template id="page_is_free" name="Login Layout">
         <t t-call="web.layout">
-        	<div>
-            	<p>TODO: display yes or no</p>
+            <div>
+                <h1>
+                    <t t-if="is_free">Yes</t>
+                    <t t-else="">No</t>
+                </h1>
             </div>
         </t>
     </template>
