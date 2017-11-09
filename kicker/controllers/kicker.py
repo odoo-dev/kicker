@@ -1,7 +1,8 @@
 from odoo import http
 
-class KickerAPI(http.Controller):
 
-    @http.route(['/free'], type='http', auth="none")
+class KickerController(http.Controller):
+
+    @http.route(['/free'], type='http', auth="public")
     def is_the_kicker_free(self):
-        return '1'
+        return request.render('kicker.page_is_free', {})

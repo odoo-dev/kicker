@@ -1,3 +1,4 @@
+
 {
     'name': 'Kicker App',
     'version': '1.0',
@@ -6,4 +7,7 @@
     'summary': 'Kicker in the Lunch Room',
     'website': 'https://kicker.odoo.com',
     'depends': ['http_routing'],
+    'data': [
+        'views/kicker_templates.xml',
+    ]
 }
