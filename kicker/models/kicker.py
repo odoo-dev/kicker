@@ -19,14 +19,22 @@ class Kicker(models.Model):
 
 	nickname = fields.Char('Nickname', required=True, help="Nickname of the kicker. Used in the ping.")
 	location = fields.Char('Location')
+	token = fields.Char('Token', required=True, default=_default_token)
 	ping_ids = fields.One2many("kicker.ping", "kicker_id", "Pings")
 	is_available = fields.Boolean('Is Available', compute='_compute_is_available')
-	token = fields.Char('Token', required=True, default=_default_token)
+	last_status_change = fields.Datetime("Available since", _compute='_compute_last_status_change')
+	busy_since = fields.Datetime("Available since", _compute='_compute_last_status_change')
 
 	@api.depends('ping_ids.available')
 	def _compute_is_available(self):
 		for kicker in self:
 			kicker.available = kicker.ping_ids[0].available
+
+	@api.depends('ping_ids.available')
+	def _compute_last_status_change(self):
+		for kicker in self:
+			last_ping_change = self.env['kicker.ping'].search([('kicker_id', '=', kicker.id), ('available', '!=', kicker.is_available)])
+			kicker.last_status_change = last_ping_change.create_date
 
 
 class Ping(models.Model):
@@ -39,9 +47,10 @@ class Ping(models.Model):
     kicker_token = fields.Char('Kicker Token')
     create_date = fields.Datetime('Create date', default=fields.Datetime.now)
     available = fields.Boolean('Is free')
+    ip_address = fields.Char("IP address of the ping")
 
     @api.model
-    def ping(self, kicker_token, available):
+    def ping(self, kicker_token, available, ip_address=False):
     	kicker = self.env['kicker.kicker'].search([('token', '=', kicker_token)])
     	if not kicker:
     		_logger.warning("Unknow kicker has ping, but we don't know who ...")
@@ -51,6 +60,7 @@ class Ping(models.Model):
     		'kicker_id': kicker.id,
     		'kicker_token': kicker_token,
     		'available': available,
+    		'ip_address': ip_address,
     	})
 
     	self.env['bus.bus'].sendone((self._cr.dbname, 'kicker.ping', kicker.id), {
