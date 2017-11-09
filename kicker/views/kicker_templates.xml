@@ -34,6 +34,7 @@
     <!--
         App Pages Templates
     -->
+    <template id="page_is_free" name="Is the Kicker Free?">
         <t t-call="web.layout">
             <div>
                 <h1>
