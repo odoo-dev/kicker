@@ -5,6 +5,8 @@
         Genral Templates
     -->
     <template id="assets_frontend" name="Common Assets (used in backend interface and website)">
+        <link rel='stylesheet' type="text/less" href='/kicker/static/src/less/kicker.less'/>
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Mono" rel="stylesheet"/>
         <script type="text/javascript" src="/bus/static/src/js/bus.js"></script>
     </template>
 
@@ -35,12 +37,20 @@
         App Pages Templates
     -->
     <template id="page_is_free" name="Is the Kicker Free?">
-        <t t-call="web.layout">
-            <div>
-                <h1>
-                    <t t-if="kicker.is_available">Yes</t>
-                    <t t-else="">No</t>
-                </h1>
+        <t t-set="rand_bg" t-value="0"/>
+        <t t-set="body_classname" t-value="'o_kicker_bg_' + str(rand_bg or 0)"/>
+        <t t-call="kicker.layout">
+            <div t-attf-class="o_kicker_background o_kicker_bg_{{ rand_bg or 0 }}"/>
+            <div t-attf-class="o_kicker_free o_kicker_bg_{{ rand_bg or 0 }}">
+                <div class="o_kicker_content">
+                    <h1>Kicker is</h1>
+                    <t t-if="is_free">
+                        <h1 class="bling-bling">free</h1>
+                    </t>
+                    <t t-else="">
+                        <h1 class="bling-bling">busy</h1>
+                    </t>
+                </div>
             </div>
         </t>
     </template>
