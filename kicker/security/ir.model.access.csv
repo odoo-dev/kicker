@@ -1,0 +1,5 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_kicker_kicker_user,kicker.kicker.user,model_kicker_kicker,base.group_user,1,0,0,0
+access_kicker_kicker_manager,kicker.kicker.manager,model_kicker_kicker,kicker.group_kicker_manager,1,1,1,1
+access_kicker_ping_user,kicker.ping.user,model_kicker_ping,base.group_user,1,0,0,0
+access_kicker_ping_manager,kicker.ping.manager,model_kicker_ping,kicker.group_kicker_manager,1,1,1,1

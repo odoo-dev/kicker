@@ -8,6 +8,8 @@
     'website': 'https://kicker.odoo.com',
     'depends': ['http_routing', 'bus'],
     'data': [
+    	'security/kicker_security.xml',
+        'security/ir.model.access.csv',
         'views/kicker_templates.xml',
     ]
 }
