@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!--
+        Genral Templates
+    -->
+    <template id="assets_frontend" name="Common Assets (used in backend interface and website)">
+        <script type="text/javascript" src="/bus/static/src/js/bus.js"></script>
+    </template>
+
 	<template id="layout" name="Web layout">&lt;!DOCTYPE html&gt;
         <html>
             <head>
@@ -11,6 +18,11 @@
                 <title t-esc="title or 'Odoo'"/>
                 <link type="image/x-icon" rel="shortcut icon" t-att-href="x_icon or '/web/static/src/img/favicon.ico'"/>
 
+                <t t-call-assets="web.assets_common" t-js="false"/>
+                <t t-call-assets="kicker.assets_frontend" t-js="false"/>
+                <t t-call-assets="web.assets_common" t-css="false"/>
+                <t t-call-assets="kicker.assets_frontend" t-css="false"/>
+
                 <t t-raw="head or ''"/>
             </head>
             <body t-att-class="body_classname">
@@ -19,6 +31,9 @@
         </html>
     </template>
 
+    <!--
+        App Pages Templates
+    -->
     <template id="page_is_free" name="Login Layout">
         <t t-call="web.layout">
         	<div>
