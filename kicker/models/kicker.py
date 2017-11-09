@@ -23,7 +23,6 @@ class Kicker(models.Model):
 	ping_ids = fields.One2many("kicker.ping", "kicker_id", "Pings")
 	is_available = fields.Boolean('Is Available', compute='_compute_is_available')
 	last_status_change = fields.Datetime("Available since", _compute='_compute_last_status_change')
-	busy_since = fields.Datetime("Available since", _compute='_compute_last_status_change')
 
 	@api.depends('ping_ids.available')
 	def _compute_is_available(self):
