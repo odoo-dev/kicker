@@ -1,0 +1,1 @@
+Fun side project to hack Odoo's kicker
