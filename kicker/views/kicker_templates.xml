@@ -34,10 +34,11 @@
     <!--
         App Pages Templates
     -->
+    <template id="page_is_free" name="Kicker: Is Free Page">
         <t t-call="web.layout">
             <div>
                 <h1>
-                    <t t-if="is_free">Yes</t>
+                    <t t-if="kicker.is_available">Yes</t>
                     <t t-else="">No</t>
                 </h1>
             </div>

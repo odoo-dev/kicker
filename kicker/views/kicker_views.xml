@@ -19,9 +19,11 @@
         <field name="name">kicker.kicker.form</field>
         <field name="model">kicker.kicker</field>
         <field name="arch" type="xml">
-            <form string="Lead Tags">
+            <form string="Kicker">
                 <group>
-                    <h2><field name="nickname" placeholder="e.g. Kicker in G-R"/></h2>
+                    <h1><field name="nickname" placeholder="e.g. Kicker in G-R"/></h1>
+                </group>
+                <group>
                     <group>
                         <field name="is_available"/>
                         <field name="last_status_change"/>
@@ -30,7 +32,7 @@
                         <field name="location"/>
                     </group>
                 </group>
-                <notebook groups="kicker.group_kicker_manager">
+                <notebook groups="base.group_no_one">
                     <page string="Pings">
                         <field name="ping_ids">
                             <tree create="false" edit="false" delete="false">
@@ -49,9 +51,9 @@
     <!--
         kicker.ping Views
     -->
-    <record id="kicker_kicker_view_tree" model="ir.ui.view">
-        <field name="name">kicker.kicker.tree</field>
-        <field name="model">kicker.kicker</field>
+    <record id="kicker_ping_view_tree" model="ir.ui.view">
+        <field name="name">kicker.ping.tree</field>
+        <field name="model">kicker.ping</field>
         <field name="arch" type="xml">
             <tree string="Kickers" create="false" edit="false" delete="false">
                 <field name="create_date"/>
@@ -69,14 +71,14 @@
     <record id="kicker_kicker_action_list" model="ir.actions.act_window">
         <field name="name">Kickers</field>
         <field name="res_model">kicker.kicker</field>
-        <field name="view_type">tree</field>
+        <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
     </record>
 
     <record id="kicker_ping_action_list" model="ir.actions.act_window">
         <field name="name">Pings</field>
         <field name="res_model">kicker.ping</field>
-        <field name="view_type">tree</field>
+        <field name="view_type">form</field>
         <field name="view_mode">tree</field>
     </record>
 
@@ -103,6 +105,7 @@
         name="Pings"
         parent="kicker_menu_root"
         action="kicker_ping_action_list"
+        groups="base.group_no_one"
         sequence="15"/>
 
 </odoo>
