@@ -8,7 +8,7 @@ import numpy
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", help="path to the video file")
-ap.add_argument("-t", "--threshold", type=int, default=10**6, help="minimum threshold")
+ap.add_argument("-t", "--threshold", type=int, default=30, help="minimum threshold")
 args = vars(ap.parse_args())
 
 if args.get("video", None) is None:
@@ -44,8 +44,8 @@ while True:
 
     # resize the frame, convert it to grayscale, and blur it
     frame = imutils.resize(frame, width=500)
-    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
-    frame = cv2.GaussianBlur(frame, (21, 21), 0)
+    # frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # frame = cv2.GaussianBlur(frame, (21, 21), 0)
 
     if frame_count <= 1:
         previous_frame = frame
@@ -63,18 +63,19 @@ while True:
     # cv2.waitKey(0)
     # cv2.destroyAllWindows()
 
-    if frame_delta.sum() > thresh:
-        print("MOVED! %s" % frame_delta.sum())
+    diff = numpy.mean(frame_delta, axis=2)
+    diff[diff<=thresh] = 0
+    diff[diff>thresh] = 255
 
-    # diff = numpy.mean(frame_delta, axis=2)
-    # diff[diff<=thresh] = 0
-    # diff[diff>thresh] = 255
+    if diff.sum() > 10**6:
+        print("MOVED! %s" % diff.sum())
+
     # mask = numpy.dstack([diff]*3)
     # below_threshold = len(list(filter(lambda k: k==0, mask.flatten())))
     # above_threshold = len(list(filter(lambda k: k!=0, mask.flatten())))
     # percentage = below_threshold / (below_threshold + above_threshold)
     # print("Frame %s: diff %s%%" % (frame_count, percentage))
 
-    wait(3)
+    wait(2)
 
     previous_frame = frame
