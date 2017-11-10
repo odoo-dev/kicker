@@ -1,25 +1,25 @@
 import argparse
-import datetime
-import imutils
 import time
 import cv2
 import numpy
- 
+
 # construct the argument parser and parse the arguments
 ap = argparse.ArgumentParser()
 ap.add_argument("-v", "--video", help="path to the video file")
-ap.add_argument("-t", "--threshold", type=int, default=50, help="minimum threshold")
+ap.add_argument("-t", "--threshold", type=int, default=10, help="minimum threshold")
+ap.add_argument("-d", "--delay", type=float, default=0, help="delay between frames processing (ignored if video file is specified)")
+ap.add_argument("-a", "--accumalation", type=float, default=0.1, help="accumalation factor; e.g 0.5 to combine the mean image with the new image with the same weight")
 args = vars(ap.parse_args())
 
 if args.get("video", None) is None:
     # 0 is probably the webcam
-    camera = cv2.VideoCapture(1)
+    camera = cv2.VideoCapture(0)
     time.sleep(0.25)
 else:
     camera = cv2.VideoCapture(args["video"])
 
 # initialize the first frame in the video stream
-previous_frame = None
+mean_frame = None
 frame_count = 0
 thresh = args['threshold']
 
@@ -36,30 +36,23 @@ while True:
         break
 
     # resize the frame, convert it to grayscale, and blur it
-    frame = imutils.resize(frame, width=500)
-    if frame_count <= 1:
-        previous_frame = frame
+    frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    frame = cv2.GaussianBlur(frame, (21, 21), 0)
+
+    if mean_frame is None:
+        print("[INFO] starting background model...")
+        mean_frame = frame.copy().astype("float")
         continue
 
-    if previous_frame.shape != frame.shape:
-        print("Frame different")
+    frame_delta = cv2.absdiff(cv2.convertScaleAbs(mean_frame), frame)
+    frame_thresh = cv2.threshold(frame_delta, thresh, 255, cv2.THRESH_BINARY)[1]
+    percentage = numpy.sum(frame_thresh) / 255.0 / frame_thresh.size
+    cv2.imwrite('frame_%d.png' % frame_count, frame_thresh)
+    cv2.imwrite('mean_%d.png' % frame_count, mean_frame)
 
-    frame_delta = cv2.absdiff(previous_frame, frame).sum()
+    print("Frame {:d}: diff {:.2%}".format(frame_count, percentage))
 
-    diff = numpy.mean(frame_delta, axis=2)
-    diff[diff<=thresh] = 0
-    diff[diff>thresh] = 255
-    mask = numpy.dstack([diff]*3)
-    below_threshold = len(list(filter(lambda k: k==0, mask.flatten())))
-    above_threshold = len(list(filter(lambda k: k!=0, mask.flatten())))
-    percentage = below_threshold / (below_threshold + above_threshold)
-    print("Frame %s: diff %s%%" % (frame_count, percentage))
+    if args.get('delay') and not args.get('video'):
+        time.sleep(args.get('delay'))
 
-    ## show the image
-    #         cv2.imshow(text, frame)
-    #         cv2.waitKey(0)
-    #         cv2.destroyAllWindows()
-
-    time.sleep(5)
-
-    previous_frame = frame
+    cv2.accumulateWeighted(frame, mean_frame, 0.1)
