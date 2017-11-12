@@ -6,28 +6,46 @@ body, html {
     font-family: "Roboto Mono", "Verdana", sans-serif;
 }
 
-.o_kicker_bg_0 {
+.o_kicker_bg {
     background-repeat:no-repeat;
-    background-attachment: fixed;
     background-size: cover;
-    background-image: url('/kicker/static/img/bg0.gif');
+    background-position: center;
 }
+
+.o_kicker_bg_gen(10);
+
+.o_kicker_bg_gen(@n, @i: 0) when (@i =< @n) {
+  .o_kicker_bg_yes_@{i} {
+    background-image: url("/kicker/static/img/yes/@{i}.gif");
+  }
+  .o_kicker_bg_no_@{i} {
+      background-image: url("/kicker/static/img/no/@{i}.gif");
+  }
+  .o_kicker_bg_gen(@n, (@i + 1));
+}
+
 
 .o_kicker_background {
     position: fixed;
-    left: 0;
-    right: 0;
+    left: -2.5%;
+    top: -2.5%;
     z-index: 1;
     
     display: block;
-    width: 100%;
-    height: 100%;
+    width: 15%;
+    height: 15%;
 
-    filter: blur(5px);    
+    filter: blur(1px);   
+    transform-origin: top left;
+    transform: scale(7);
+ 
 }
 
 .o_kicker_free {
-    position: relative;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate3d(-50%, -50%, 0);
     margin: 0 auto;
     z-index: 10;
     background-size: contain;
@@ -46,6 +64,10 @@ body, html {
         .bling-bling {
             color: red;
             letter-spacing: 31px;
+            background-color: rgba(255,255,255,0.6);
+            span {
+                margin-right: -28px;
+            }
         }
     }
 }

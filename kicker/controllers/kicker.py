@@ -1,7 +1,8 @@
 import ast
 import logging
+import random
 
-from odoo import http
+from odoo import api, http
 from odoo.http import request
 
 _logger = logging.getLogger(__name__)
@@ -9,18 +10,22 @@ _logger = logging.getLogger(__name__)
 
 class KickerController(http.Controller):
 
+    NUM_BG = 10
+
     @http.route(['/free', '/free/<model("kicker.kicker"):kicker>'], type='http', auth="public")
-    def is_the_kicker_free(self, kicker=None):
+    def is_the_kicker_free(self, kicker=None, *kw):
         if not kicker:
             kicker = request.env['kicker.kicker'].sudo().search([], limit=1)
         if not kicker:
             return request.not_found()
+        rand_bg = random.randrange(0, self.NUM_BG - 1, step=1)
         return request.render('kicker.page_is_free', {
-            'kicker': kicker,
+            'is_free': kicker.is_available,
+            'bg': ('yes_%s' if kicker.is_available else 'no_%s') % rand_bg,
         })
 
     @http.route(['/kicker/ping'], auth='none', csrf=False)
-    def ping(self, token=False, status=""):
+    def ping(self, token=False, status="", *kw):
         """
             TEST URL:
                 /kicker/ping?token=123-456789-321&status={"available": True,"temperature":"15.4"}
