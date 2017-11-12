@@ -13,7 +13,7 @@ class KickerController(http.Controller):
     NUM_BG = 10
 
     @http.route(['/free', '/free/<model("kicker.kicker"):kicker>'], type='http', auth="public")
-    def is_the_kicker_free(self, kicker=None, *kw):
+    def is_the_kicker_free(self, kicker=None, **kw):
         if not kicker:
             kicker = request.env['kicker.kicker'].sudo().search([], limit=1)
         if not kicker:
@@ -25,7 +25,7 @@ class KickerController(http.Controller):
         })
 
     @http.route(['/kicker/ping'], auth='none', csrf=False)
-    def ping(self, token=False, status="", *kw):
+    def ping(self, token=False, status="", **kw):
         """
             TEST URL:
                 /kicker/ping?token=123-456789-321&status={"available": True,"temperature":"15.4"}
