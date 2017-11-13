@@ -1,9 +1,14 @@
+/*-------------------- Variables --------------------*/
+@navbar-height: 4em;
+@bg-muted: rgb(240,240,240);
+
+/*-------------------- IS THE KICKER FREE? --------------------*/
 body, html {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
-    font-family: "Roboto Mono", "Verdana", sans-serif;
+    font-family: "Roboto", "Verdana", sans-serif;
 }
 
 .o_kicker_bg {
@@ -30,15 +35,15 @@ body, html {
     left: -2.5%;
     top: -2.5%;
     z-index: 1;
-    
+
     display: block;
     width: 15%;
     height: 15%;
 
-    filter: blur(3px);   
+    filter: blur(3px);
     transform-origin: top left;
     transform: scale(7);
- 
+
 }
 
 .o_kicker_free {
@@ -54,13 +59,13 @@ body, html {
         margin: 0;
         padding: 4em;
         color: white;
-        
+
         h1,h2 {
             text-transform: uppercase;
             line-height: 1em;
             margin: 0 auto;
         }
-        
+
         .bling-bling {
             color: red;
             letter-spacing: 31px;
@@ -72,3 +77,109 @@ body, html {
     }
 }
 
+/*-------------------- APP --------------------*/
+
+/* Left Sidebar */
+#sidebar {
+    min-width: 250px;
+    max-width: 250px;
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
+    margin-left: -250px;
+    background-color: white;
+    border-right: 1px solid rgb(100,100,100);
+    /* top layer */
+    z-index: 9999;
+    &.active {
+      margin-left: 0;
+    }
+    transition: margin .3s ease;
+    padding: 4em 1em 1em 1em;
+    .sidebar-header {
+      padding-bottom: 1em;
+      margin-bottom: 1em;
+      border-bottom: 1px solid rgb(120,120,120);
+    }
+    .o_kicker_profile_image img {
+      border: 1px solid rgb(120,120,120);
+      width: 100px;
+    }
+    .nav > li {
+      a {
+        color: inherit;
+        background-color: inherit;
+        &:hover {
+          font-weight: 900;
+          transition: font-weight .3s ease-in-out;
+        }
+      }
+    }
+}
+
+.overlay {
+    /* full screen */
+    width: 100vw;
+    height: 100vh;
+    /* transparent black */
+    background: rgba(0, 0, 0, 0.8);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
+    /* middle layer, i.e. appears below the sidebar */
+    z-index: 9998;
+}
+
+/* Top Header */
+
+#top-header {
+  height: @navbar-height;
+  border-bottom: 1px solid rgb(100,100,100);
+
+  & > div {
+    height: @navbar-height;
+    line-height: @navbar-height;
+  }
+  #logo {
+    margin-left: 2em;
+  }
+
+  #burger-toggle {
+    width: @navbar-height;
+    height: @navbar-height;
+    position: fixed;
+    top: 0;
+    left: 0;
+    text-align: center;
+    z-index: 10000;
+  }
+
+  .o_kicker_status {
+    text-align: center;
+    text-transform: uppercase;
+    color: white;
+
+    &.o_status_free {
+      background-color: green;
+    }
+    &.o_status_busy {
+      background-color: red;
+    }
+  }
+}
+
+/* Content */
+.loader {
+  text-align: center;
+  height: 100%;
+  width: 100%;
+  padding: 5em 0;
+}
+
+.o_kicker_content {
+  background-color: @bg-muted;
+  height: ~"calc(100vh - @{navbar-height})";
+
+}

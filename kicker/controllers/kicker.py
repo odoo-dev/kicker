@@ -24,6 +24,10 @@ class KickerController(http.Controller):
             'bg': ('yes_%s' if kicker.is_available else 'no_%s') % rand_bg,
         })
 
+    @http.route("/app", auth="user")
+    def app(self, **kw):
+        return request.render('kicker.app', {'body_classname':'o_kicker_app', 'user': request.env.user})
+
     @http.route(['/kicker/ping'], auth='none', csrf=False)
     def ping(self, token=False, status="", **kw):
         """
@@ -40,3 +44,9 @@ class KickerController(http.Controller):
                 except Exception as err:
                     _logger.error("Kicker Ping failed when evaluting status")
             return False
+
+    # JSON routes for the JS app
+    @http.route('/app/init', type='json', auth="user", csrf=True)
+    def init(self, **kw):
+        user_info = request.env.user.read(['name', 'image_small'])
+        return user_info
