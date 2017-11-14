@@ -43,7 +43,7 @@ App Pages Templates
   <t t-call="kicker.layout">
     <div t-attf-class="o_kicker_background o_kicker_bg o_kicker_bg_{{ bg or 0 }}"/>
     <div t-attf-class="o_kicker_free o_kicker_bg o_kicker_bg_{{ bg or 0 }}">
-      <div class="o_kicker_content">
+      <div class="o_kicker_free_content">
         <h1>Kicker is</h1>
         <t t-if="is_free">
           <h1 class="bling-bling">free</h1>
