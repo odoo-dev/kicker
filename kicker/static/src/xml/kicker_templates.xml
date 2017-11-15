@@ -1,0 +1,66 @@
+<templates id="template" xml:space="preserve">
+    <t t-name="Dashboard">
+        <div class="col-md-12 o_kicker_main">
+            <h4>Hello <t t-esc="widget.name || 'darling'"/>,</h4>
+            <h6>You suck at this. Please stop.</h6>
+            <div class="o_score_card panel">
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <h4><t t-esc="widget.wins || '--'"/></h4>
+                            <h6>Won matches</h6>
+                        </div>
+                        <div class="col-xs-6">
+                            <h4><t t-esc="widget.losses || '--'"/></h4>
+                            <h6>Lost matches</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer">
+                    <button class="btn btn-primary btn-lg btn-block">Add Score</button>
+                </div>
+            </div>
+            <label>Your Stats</label>
+            <div class="panel">
+                <div class="panel-body">
+                    <div class="ct-chart ct-perfect-fourth"></div>
+                </div>
+            </div>
+            <label>Your Best Teammates</label>
+            <div class="container">
+                <div class="row">
+                    <t t-call="UserCard"/>
+                </div>
+            </div>
+            <label>Your Worst Nightmares</label>
+            <div class="container">
+                <div class="row">
+                    <t t-call="UserCard"/>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="UserCard">
+        <div class="panel text-center col-xs-5">
+            <div class="panel-body">
+                <img src="/kicker/avatar" class="img-circle" width="64px"/>
+                <p>Benjamin Stiens</p>
+                <small class="text-muted">Catchy phrase</small>
+            </div>
+        </div>
+    </t>
+
+    <t t-name="Profile">
+        <div class="col-md-12 o_kicker_main">
+            <div class="text-center">
+                <div class="text-right mb8 mt8">
+                    <div class="btn btn-xs">Update Profile <i class="fa fa-pencil"/></div>
+                </div>
+                <img src="/kicker/avatar/" class="img-circle"/>
+                <h3>Damien Bouvy</h3>
+                <h6>You suck at this. Please stop.</h6>
+            </div>
+        </div>
+    </t>
+</templates>
