@@ -1,9 +1,14 @@
 import ast
+import base64
 import logging
 import random
+import werkzeug
 
+from odoo import SUPERUSER_ID
 from odoo import api, http
 from odoo.http import request
+from odoo.modules import get_module_resource
+from odoo.addons.web.controllers.main import binary_content
 
 _logger = logging.getLogger(__name__)
 
@@ -24,9 +29,9 @@ class KickerController(http.Controller):
             'bg': ('yes_%s' if kicker.is_available else 'no_%s') % rand_bg,
         })
 
-    @http.route("/app", auth="user")
+    @http.route(['/kicker/app', "/kicker/app/<path:route>"], auth="user")
     def app(self, **kw):
-        return request.render('kicker.app', {'body_classname':'o_kicker_app', 'user': request.env.user})
+        return request.render('kicker.app', {'body_classname': 'o_kicker_app', 'user': request.env.user})
 
     @http.route(['/kicker/ping'], auth='none', csrf=False)
     def ping(self, token=False, status="", **kw):
@@ -50,3 +55,22 @@ class KickerController(http.Controller):
     def init(self, **kw):
         user_info = request.env.user.read(['name', 'image_small'])
         return user_info
+
+    @http.route(['/kicker/avatar', '/kicker/avatar/<int:user_id>'], type='http', auth="public")
+    def profile(self, user_id=None, **kw):
+        if not user_id:
+            user_id = request.env.uid
+        status, headers, content = binary_content(model='res.users', id=user_id, field='image_medium', default_mimetype='image/png', env=request.env(user=SUPERUSER_ID))
+
+        if not content:
+            img_path = get_module_resource('web', 'static/src/img', 'placeholder.png')
+            with open(img_path, 'rb') as f:
+                image = f.read()
+            content = base64.b64encode(image)
+        if status == 304:
+            return werkzeug.wrappers.Response(status=304)
+        image_base64 = base64.b64decode(content)
+        headers.append(('Content-Length', len(image_base64)))
+        response = request.make_response(image_base64, headers)
+        response.status = str(status)
+        return response
