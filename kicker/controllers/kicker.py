@@ -2,6 +2,7 @@ import ast
 import base64
 import logging
 import random
+from functools import reduce
 import werkzeug
 
 from odoo import SUPERUSER_ID
@@ -55,6 +56,36 @@ class KickerController(http.Controller):
     def init(self, **kw):
         user_info = request.env.user.read(['name', 'image_small'])
         return user_info
+
+    @http.route('/app/dashboard', type='json', auth='user', csrf=False)
+    def dashboard(self, **kw):
+        User = request.env['res.users'].sudo()
+        teammates = list(map(lambda u: User.env.ref('kicker.%s' % u), ['dbo', 'jem', 'mat']))
+        teammates = reduce(lambda u, v: u + v, teammates)
+        nightmares = list(map(lambda u: User.env.ref('kicker.%s' % u), ['bst', 'elo', 'mat']))
+        nightmares = reduce(lambda u, v: u + v, nightmares)
+        demo_data = {
+            'wins': 36,
+            'losses': 57,
+            'teammates': teammates.read(['id', 'name']),
+            'nightmares': nightmares.read(['id', 'name']),
+            'graph': [32.0/52*100, 35.0/53*100, 36.0/54*100, 36.0/56*100, 36.0/57*100]
+        }
+        return demo_data
+
+
+    @http.route('/app/community', type='json', auth='user', csrf=False)
+    def community(self, **kw):
+        User = request.env['res.users'].sudo()
+        usual = list(map(lambda u: User.env.ref('kicker.%s' % u), ['dbo', 'jem', 'mat']))
+        usual = reduce(lambda u, v: u + v, usual)
+        rare = list(map(lambda u: User.env.ref('kicker.%s' % u), ['bst', 'elo']))
+        rare = reduce(lambda u, v: u + v, rare)
+        demo_data = {
+            'usual': usual.read(['id', 'name']),
+            'rare': rare.read(['id', 'name']),
+        }
+        return demo_data
 
     @http.route(['/kicker/avatar', '/kicker/avatar/<int:user_id>'], type='http', auth="public")
     def profile(self, user_id=None, **kw):

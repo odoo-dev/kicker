@@ -91,7 +91,7 @@ App Pages Templates
         <li><a href="/kicker/app/dashboard" data-router="true">Dashboard</a></li>
         <li><a href="/kicker/app/profile" data-router="true">Profile</a></li>
         <li><a href="#">Stats</a></li>
-        <li><a href="#">Community</a></li>
+        <li><a href="/kicker/app/community" data-router="true">Community</a></li>
         <li><a href="#">Log Out</a></li>
       </ul>
     </nav>

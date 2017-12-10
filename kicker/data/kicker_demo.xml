@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- kickers -->
+        <record id="kicker_gr" model="kicker.kicker">
+            <field name="nickname">Kicker of Lunchroom in GR</field>
+            <field name="location">San Grand Rosiere</field>
+        </record>
+
+        <record id="kicker_gr" model="kicker.ping">
+            <field name="kicker_id" ref="kicker_gr"/>
+            <field name="ip_address">0.0.0.0</field>
+            <field name="available" eval="True"/>
+        </record>
+        
+        <!-- users -->
+        <record id="elo" model="res.users">
+            <field name="name">Eloïse</field>
+            <field name="login">elo</field>
+            <field name="password">elo</field>
+            <field name="groups_id" eval="[(6,0,[ref('base.group_portal')])]"/>
+            <field name="image" type="base64" file="kicker/static/img/elo.png"/>
+        </record>
+        
+        <record id="mat" model="res.users">
+            <field name="name">Martin</field>
+            <field name="login">mat</field>
+            <field name="password">mat</field>
+            <field name="groups_id" eval="[(6,0,[ref('base.group_portal')])]"/>
+            <field name="image" type="base64" file="kicker/static/img/mat.png"/>
+        </record>
+
+        <record id="jem" model="res.users">
+            <field name="name">Jérôme</field>
+            <field name="login">jem</field>
+            <field name="password">jem</field>
+            <field name="groups_id" eval="[(6,0,[ref('base.group_portal')])]"/>
+            <field name="image" type="base64" file="kicker/static/img/jem.png"/>
+        </record>
+
+        <record id="bst" model="res.users">
+            <field name="name">Benjamin</field>
+            <field name="login">bst</field>
+            <field name="password">bst</field>
+            <field name="groups_id" eval="[(6,0,[ref('base.group_portal')])]"/>
+            <field name="image" type="base64" file="kicker/static/img/bst.jpeg"/>
+        </record>
+
+        <record id="dbo" model="res.users">
+            <field name="name">Damien</field>
+            <field name="login">dbo</field>
+            <field name="password">dbo</field>
+            <field name="groups_id" eval="[(6,0,[ref('base.group_portal')])]"/>
+            <field name="image" type="base64" file="kicker/static/img/dbo.jpeg"/>
+        </record>
+
+    </data>
+</odoo>
