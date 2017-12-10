@@ -10,9 +10,11 @@
     'data': [
     	'security/kicker_security.xml',
         'security/ir.model.access.csv',
-        'data/kicker_data.xml',
         'views/kicker_templates.xml',
         'views/kicker_views.xml',
+    ],
+    'demo': [
+    	'data/kicker_demo.xml',
     ],
     'application': True,
 }

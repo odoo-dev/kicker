@@ -1,4 +1,5 @@
 <templates id="template" xml:space="preserve">
+    <!-- Pages -->
     <t t-name="Dashboard">
         <div class="col-md-12 o_kicker_main">
             <h4>Hello <t t-esc="widget.name || 'darling'"/>,</h4>
@@ -28,29 +29,27 @@
             </div>
             <label>Your Best Teammates</label>
             <div class="container">
-                <div class="row">
-                    <t t-call="UserCard"/>
+                <div t-if="widget.teammates" class="row o_kicker_user_row">
+                    <t t-foreach="widget.teammates" t-as="user">
+                        <t t-call="UserCard">
+                            <t t-set="card_class" t-value="'o_kicker_user_card'"/>
+                        </t>
+                    </t>
                 </div>
             </div>
             <label>Your Worst Nightmares</label>
             <div class="container">
-                <div class="row">
-                    <t t-call="UserCard"/>
+                <div t-if="widget.nightmares" class="row o_kicker_user_row">
+                    <t t-foreach="widget.nightmares" t-as="user">
+                        <t t-call="UserCard">
+                            <t t-set="card_class" t-value="'o_kicker_user_card'"/>
+                        </t>
+                    </t>
                 </div>
             </div>
         </div>
     </t>
-
-    <t t-name="UserCard">
-        <div class="panel text-center col-xs-5">
-            <div class="panel-body">
-                <img src="/kicker/avatar" class="img-circle" width="64px"/>
-                <p>Benjamin Stiens</p>
-                <small class="text-muted">Catchy phrase</small>
-            </div>
-        </div>
-    </t>
-
+    
     <t t-name="Profile">
         <div class="col-md-12 o_kicker_main">
             <div class="text-center">
@@ -63,4 +62,51 @@
             </div>
         </div>
     </t>
+
+    <t t-name="Community">
+        <div class="col-md-12 o_kicker_main">
+            <h4>Community</h4>
+            <label>You played often with</label>
+            <div class="container">
+                <div t-if="widget.usual" class="row">
+                    <t t-foreach="widget.usual" t-as="user">
+                        <t t-call="UserCard">
+                            <t t-set="user.fav" t-value="user.name.indexOf('e') !== -1"/>
+                            <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
+                        </t>
+                    </t>
+                </div>
+            </div>
+            <label>You never played against</label>
+            <div class="container">
+                <div t-if="widget.rare" class="row">
+                    <t t-foreach="widget.rare" t-as="user">
+                        <t t-call="UserCard">
+                            <t t-set="user.fav" t-value="user.name.indexOf('e') !== -1"/>
+                            <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
+                        </t>
+                    </t>
+                </div>
+            </div>
+        </div>
+    </t>
+
+    <!--  Components -->
+    <t t-name="UserCard">
+        <div t-attf-class="{{ card_class}} test">
+            <div class="panel text-center">
+                <div class="panel-body">
+                    <t t-if="user.hasOwnProperty('fav')">
+                        <i t-attf-class="o_kicker_user_fav fa {{ user.fav ? 'fa-heart':'fa-heart-o'}}"/>
+                    </t>
+                    <p>
+                        <img t-attf-src="/kicker/avatar/{{ user.id }}" class="img-circle" width="64px"/>
+                    </p>
+                    <p t-esc="user.name"/>
+                    <small class="text-muted">Catchy phrase</small>
+                </div>
+            </div>
+        </div>
+    </t>
+
 </templates>

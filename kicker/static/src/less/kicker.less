@@ -199,4 +199,21 @@ body {
   overflow-y: auto;  /*adds scroll to this container*/
   flex-direction: column;
   width: 100%;
+  
+  .o_kicker_user_row {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+      .o_kicker_user_card {
+        width: 150px;
+        margin-right: 15px;
+        flex: 0 0 auto;
+      }
+    }
+    .o_kicker_user_fav {
+      position: absolute;
+      top: 7px;
+      right: 22px;
+    }
+
 }

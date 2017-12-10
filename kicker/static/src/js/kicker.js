@@ -15,12 +15,11 @@ var Dashboard = Widget.extend({
     template: 'Dashboard',
     xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
     init: function () {
-        this.data = {
+        this.chartData = {
           // A labels array that can contain any sort of values
           labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
           // Our series array that contains series objects or in this case series data arrays
           series: [
-            [5, 2, 4, 2, 0]
           ]
         };
         this.chartOptions = {
@@ -28,24 +27,36 @@ var Dashboard = Widget.extend({
                 showGrid: false,
             },
             axisY: {
-                showGrid: false,
-                showLabel: false,
+                showGrid: true,
+                showLabel: true,
+                low: 0,
+                high: 100,
+                ticks: [0, 25, 50, 75, 100],
+                type: Chartist.FixedScaleAxis,
             },
         };
     },
     start: function () {
         var self = this;
-        setTimeout(function() {
-            self.name = 'Damien Yvuob';
-            self.wins = 36;
-            self.losses = 154;
-            self.data.series = [[1,0,2,4,6]];
-            self.renderElement();
-        }, 2000);
+        return $.when(
+            rpc.query({
+                route: '/app/dashboard',
+            }),
+            this._super.apply(this, arguments)
+        )
+            .then(function(data) {
+                console.log(data);
+                self.wins = data.wins;
+                self.losses = data.losses;
+                self.teammates = data.teammates;
+                self.nightmares = data.nightmares;
+                self.chartData.series = [data.graph];
+                self.renderElement();            
+            });
     },
     renderElement: function () {
         var result = this._super.apply(this, arguments);
-        new Chartist.Line(this.$('.ct-chart')[0], this.data, this.chartOptions);
+        new Chartist.Line(this.$('.ct-chart')[0], this.chartData, this.chartOptions);
         return result;
     }    
 })
@@ -53,6 +64,26 @@ var Dashboard = Widget.extend({
 var Profile = Widget.extend({
     template: 'Profile',
     xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
+})
+
+var Community = Widget.extend({
+    template: 'Community',
+    xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
+    start: function () {
+        var self = this;
+        return $.when(
+            rpc.query({
+                route: '/app/community',
+            }),
+            this._super.apply(this, arguments)
+        )
+            .then(function(data) {
+                console.log(data);
+                self.usual = data.usual;
+                self.rare = data.rare;
+                self.renderElement();            
+            });
+    },
 })
 
 var App = Widget.extend({
@@ -64,18 +95,23 @@ var App = Widget.extend({
   pages: {
       dashboard: Dashboard,
       profile: Profile,
+      community: Community,
   },
   init: function (parent, options) {
       this._super.apply(this, arguments);
       var self = this;
-      Router.config({ mode: 'history', root:'/kicker/app'});
+      Router.config({ mode: 'history'});
 
       // adding routes
       Router
       .add(/dashboard/, function () {
           self._switchPage('dashboard');
-      }).add(/profile/, function () {
+      })
+      .add(/profile/, function () {
           self._switchPage('profile');
+      })
+      .add(/community/, function () {
+          self._switchPage('community');
       })
       .listen();
   },
