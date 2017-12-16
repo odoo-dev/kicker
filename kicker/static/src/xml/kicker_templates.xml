@@ -29,21 +29,31 @@
             </div>
             <label>Your Best Teammates</label>
             <div class="container">
-                <div t-if="widget.teammates" class="row o_kicker_user_row">
-                    <t t-foreach="widget.teammates" t-as="user">
-                        <t t-call="UserCard">
-                            <t t-set="card_class" t-value="'o_kicker_user_card'"/>
+                <div class="row o_kicker_user_row">
+                    <t t-if="widget.teammates">
+                        <t t-foreach="widget.teammates" t-as="user">
+                            <t t-call="UserCard">
+                                <t t-set="card_class" t-value="'o_kicker_user_card'"/>
+                            </t>
                         </t>
+                    </t>
+                    <t t-else="" t-call="UserCardLoader">
+                        <t t-set="card_class" t-value="'o_kicker_user_card'"/>
                     </t>
                 </div>
             </div>
             <label>Your Worst Nightmares</label>
             <div class="container">
-                <div t-if="widget.nightmares" class="row o_kicker_user_row">
-                    <t t-foreach="widget.nightmares" t-as="user">
-                        <t t-call="UserCard">
-                            <t t-set="card_class" t-value="'o_kicker_user_card'"/>
+                <div class="row o_kicker_user_row">
+                    <t t-if="widget.nightmares">
+                        <t t-foreach="widget.nightmares" t-as="user">
+                            <t t-call="UserCard">
+                                <t t-set="card_class" t-value="'o_kicker_user_card'"/>
+                            </t>
                         </t>
+                    </t>
+                    <t t-else="" t-call="UserCardLoader">
+                        <t t-set="card_class" t-value="'o_kicker_user_card'"/>
                     </t>
                 </div>
             </div>
@@ -68,23 +78,33 @@
             <h4>Community</h4>
             <label>You played often with</label>
             <div class="container">
-                <div t-if="widget.usual" class="row">
-                    <t t-foreach="widget.usual" t-as="user">
-                        <t t-call="UserCard">
-                            <t t-set="user.fav" t-value="user.name.indexOf('e') !== -1"/>
-                            <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
+                <div class="row">
+                    <t t-if="widget.usual">
+                        <t t-foreach="widget.usual" t-as="user">
+                            <t t-call="UserCard">
+                                <t t-set="user.fav" t-value="user.name.indexOf('e') !== -1"/>
+                                <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
+                            </t>
                         </t>
+                    </t>
+                    <t t-else="" t-call="UserCardLoader">
+                        <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
                     </t>
                 </div>
             </div>
             <label>You never played against</label>
             <div class="container">
-                <div t-if="widget.rare" class="row">
-                    <t t-foreach="widget.rare" t-as="user">
-                        <t t-call="UserCard">
-                            <t t-set="user.fav" t-value="user.name.indexOf('e') !== -1"/>
-                            <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
+                <div class="row">
+                    <t t-if="widget.rare">
+                        <t t-foreach="widget.rare" t-as="user">
+                            <t t-call="UserCard">
+                                <t t-set="user.fav" t-value="user.name.indexOf('e') !== -1"/>
+                                <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
+                            </t>
                         </t>
+                    </t>
+                    <t t-else="" t-call="UserCardLoader">
+                        <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
                     </t>
                 </div>
             </div>
@@ -93,20 +113,36 @@
 
     <!--  Components -->
     <t t-name="UserCard">
-        <div t-attf-class="{{ card_class}} test">
+        <div t-attf-class="{{ card_class }}">
             <div class="panel text-center">
                 <div class="panel-body">
                     <t t-if="user.hasOwnProperty('fav')">
                         <i t-attf-class="o_kicker_user_fav fa {{ user.fav ? 'fa-heart':'fa-heart-o'}}"/>
                     </t>
                     <p>
-                        <img t-attf-src="/kicker/avatar/{{ user.id }}" class="img-circle" width="64px"/>
+                        <img t-if="user" t-attf-src="/kicker/avatar/{{ user.id }}" class="img-circle" width="64px"/>
+                        <img t-else="" src="/kicker/static/img/user.svg" class="img-circle" width="64px"/>
                     </p>
                     <p t-esc="user.name"/>
                     <small class="text-muted">Catchy phrase</small>
                 </div>
             </div>
         </div>
+    </t>
+
+    <t t-name="UserCardLoader">
+        <div t-attf-class="{{ card_class}}">
+            <div class="panel text-center">
+                <div class="panel-body">
+                    <p>
+                        <img src="/kicker/static/img/user.svg" class="img-circle avatar_placeholder" width="64px"/>
+                    </p>
+                    <p>Loading...</p>
+                    <small class="text-muted">Just a sec</small>
+                </div>
+            </div>
+        </div>
+
     </t>
 
 </templates>
