@@ -1,83 +1,89 @@
 <templates id="template" xml:space="preserve">
     <!-- Pages -->
     <t t-name="Dashboard">
-        <div class="col-md-12 o_kicker_main">
+        <div class="container-fluid o_kicker_main">
             <h4>Hello <t t-esc="widget.name || 'darling'"/>,</h4>
             <h6>You suck at this. Please stop.</h6>
-            <div class="o_score_card panel">
-                <div class="panel-body">
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <h4><t t-esc="widget.wins || '--'"/></h4>
-                            <h6>Won matches</h6>
+            <div class="row">
+                <div class="col-xs-12 col-lg-6">
+                    <div class="o_score_card panel">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <h4><t t-esc="widget.wins || '--'"/></h4>
+                                    <h6>Won matches</h6>
+                                </div>
+                                <div class="col-xs-6">
+                                    <h4><t t-esc="widget.losses || '--'"/></h4>
+                                    <h6>Lost matches</h6>
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-xs-6">
-                            <h4><t t-esc="widget.losses || '--'"/></h4>
-                            <h6>Lost matches</h6>
+                        <div class="panel-footer">
+                            <button class="btn btn-primary btn-lg btn-block">Add Score</button>
+                        </div>
+                    </div>
+                    <label>Your Stats</label>
+                    <div class="panel">
+                        <div class="panel-body">
+                            <div class="ct-chart ct-perfect-fourth"></div>
                         </div>
                     </div>
                 </div>
-                <div class="panel-footer">
-                    <button class="btn btn-primary btn-lg btn-block">Add Score</button>
-                </div>
-            </div>
-            <label>Your Stats</label>
-            <div class="panel">
-                <div class="panel-body">
-                    <div class="ct-chart ct-perfect-fourth"></div>
-                </div>
-            </div>
-            <label>Your Best Teammates</label>
-            <div class="container">
-                <div class="row o_kicker_user_row">
-                    <t t-if="widget.teammates">
-                        <t t-foreach="widget.teammates" t-as="user">
-                            <t t-call="UserCard">
+                <div class="col-xs-12 col-lg-6">
+                    <label>Your Best Teammates</label>
+                    <div class="container-fluid">
+                        <div class="row o_kicker_user_row">
+                            <t t-if="widget.teammates">
+                                <t t-foreach="widget.teammates" t-as="user">
+                                    <t t-call="UserCard">
+                                        <t t-set="card_class" t-value="'o_kicker_user_card'"/>
+                                    </t>
+                                </t>
+                            </t>
+                            <t t-else="" t-call="UserCardLoader">
                                 <t t-set="card_class" t-value="'o_kicker_user_card'"/>
                             </t>
-                        </t>
-                    </t>
-                    <t t-else="" t-call="UserCardLoader">
-                        <t t-set="card_class" t-value="'o_kicker_user_card'"/>
-                    </t>
-                </div>
-            </div>
-            <label>Your Worst Nightmares</label>
-            <div class="container">
-                <div class="row o_kicker_user_row">
-                    <t t-if="widget.nightmares">
-                        <t t-foreach="widget.nightmares" t-as="user">
-                            <t t-call="UserCard">
+                        </div>
+                    </div>
+                    <label>Your Worst Nightmares</label>
+                    <div class="container-fluid">
+                        <div class="row o_kicker_user_row">
+                            <t t-if="widget.nightmares">
+                                <t t-foreach="widget.nightmares" t-as="user">
+                                    <t t-call="UserCard">
+                                        <t t-set="card_class" t-value="'o_kicker_user_card'"/>
+                                    </t>
+                                </t>
+                            </t>
+                            <t t-else="" t-call="UserCardLoader">
                                 <t t-set="card_class" t-value="'o_kicker_user_card'"/>
                             </t>
-                        </t>
-                    </t>
-                    <t t-else="" t-call="UserCardLoader">
-                        <t t-set="card_class" t-value="'o_kicker_user_card'"/>
-                    </t>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </t>
     
     <t t-name="Profile">
-        <div class="col-md-12 o_kicker_main">
+        <div class="container-fluid o_kicker_main">
             <div class="text-center">
                 <div class="text-right mb8 mt8">
                     <div class="btn btn-xs">Update Profile <i class="fa fa-pencil"/></div>
                 </div>
-                <img src="/kicker/avatar/" class="img-circle"/>
-                <h3>Damien Bouvy</h3>
+                <img t-attf-src="/kicker/avatar/{{ widget.user.id }}" class="img-circle"/>
+                <h3><t t-esc="widget.user.name"/></h3>
                 <h6>You suck at this. Please stop.</h6>
             </div>
         </div>
     </t>
 
     <t t-name="Community">
-        <div class="col-md-12 o_kicker_main">
+        <div class="container-fluid o_kicker_main">
             <h4>Community</h4>
             <label>You played often with</label>
-            <div class="container">
+            <div class="container-fluid">
                 <div class="row">
                     <t t-if="widget.usual">
                         <t t-foreach="widget.usual" t-as="user">
@@ -93,7 +99,7 @@
                 </div>
             </div>
             <label>You never played against</label>
-            <div class="container">
+            <div class="container-fluid">
                 <div class="row">
                     <t t-if="widget.rare">
                         <t t-foreach="widget.rare" t-as="user">
@@ -116,15 +122,17 @@
         <div t-attf-class="{{ card_class }}">
             <div class="panel text-center">
                 <div class="panel-body">
-                    <t t-if="user.hasOwnProperty('fav')">
-                        <i t-attf-class="o_kicker_user_fav fa {{ user.fav ? 'fa-heart':'fa-heart-o'}}"/>
-                    </t>
-                    <p>
-                        <img t-if="user" t-attf-src="/kicker/avatar/{{ user.id }}" class="img-circle" width="64px"/>
-                        <img t-else="" src="/kicker/static/img/user.svg" class="img-circle" width="64px"/>
-                    </p>
-                    <p t-esc="user.name"/>
-                    <small class="text-muted">Catchy phrase</small>
+                    <a t-attf-href="/kicker/app/community/user/{{ user.id }}" data-router="true" class="o_kicker_user_link">
+                        <t t-if="user.hasOwnProperty('fav')">
+                            <i t-attf-class="o_kicker_user_fav fa {{ user.fav ? 'fa-heart':'fa-heart-o'}}"/>
+                        </t>
+                        <p>
+                            <img t-if="user" t-attf-src="/kicker/avatar/{{ user.id }}" class="img-circle" width="64px"/>
+                            <img t-else="" src="/kicker/static/img/user.svg" class="img-circle" width="64px"/>
+                        </p>
+                        <p t-esc="user.name"/>
+                        <small class="text-muted">Catchy phrase</small>
+                    </a>
                 </div>
             </div>
         </div>

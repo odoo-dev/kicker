@@ -64,15 +64,15 @@ App Pages Templates
   <t t-call="kicker.layout">
     <!-- Close Sidebar Button -->
     <div id="top-header">
-        <div class="col-xs-8">
-            <span id="burger-toggle">
+        <div class="col-xs-8 col-md-10">
+            <span id="burger-toggle" class="visible-xs">
                 <i class="fa fa-bars"/>
             </span>
             <span id="logo">
                 Awesome Logo
             </span>
         </div>
-        <div class="col-xs-4 o_kicker_status o_status_free">
+        <div class="col-xs-4 col-md-2 o_kicker_status o_status_free">
             <strong>&#183;&#160;&#160;Free</strong>
         </div>
     </div>
@@ -98,7 +98,7 @@ App Pages Templates
 
     <div class="overlay"/>
 
-    <div class="container o_kicker_main">
+    <div class="container-fluid o_kicker_main">
       <div class="row">
         <div class="col-md-12 o_kicker_content">
           <div class="loader">
