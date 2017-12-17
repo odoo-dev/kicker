@@ -40,7 +40,7 @@ var Dashboard = Widget.extend({
         var self = this;
         return $.when(
             rpc.query({
-                route: '/app/dashboard',
+                route: '/kicker/dashboard',
             }),
             this._super.apply(this, arguments)
         )
@@ -87,7 +87,7 @@ var Community = Widget.extend({
         var self = this;
         return $.when(
             rpc.query({
-                route: '/app/community',
+                route: '/kicker/community',
             }),
             this._super.apply(this, arguments)
         )
@@ -179,6 +179,7 @@ var App = Widget.extend({
       ev.preventDefault();
       var link = $(ev.target).closest('a');
       if (link.length > 0) {
+          
           var path = link[0].pathname;
           Router.navigate(path);
       }
@@ -198,4 +199,18 @@ var App = Widget.extend({
 var app = new App();
 var el = $('.o_kicker_app');
 app.attachTo(el);
+
+// Register serviceworker if applicable
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+      // Registration was successful
+      console.log('ServiceWorker registration successful with scope: ', registration.scope);
+    }, function(err) {
+      // registration failed :(
+      console.log('ServiceWorker registration failed: ', err);
+    });
+  });
+}
+
 });

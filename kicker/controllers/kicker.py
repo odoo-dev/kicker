@@ -1,5 +1,6 @@
 import ast
 import base64
+import jinja2
 import logging
 import random
 from functools import reduce
@@ -9,6 +10,7 @@ from odoo import SUPERUSER_ID
 from odoo import api, http
 from odoo.http import request
 from odoo.modules import get_module_resource
+from odoo.addons.base.ir.ir_qweb import AssetsBundle
 from odoo.addons.web.controllers.main import binary_content
 
 _logger = logging.getLogger(__name__)
@@ -52,12 +54,12 @@ class KickerController(http.Controller):
             return False
 
     # JSON routes for the JS app
-    @http.route('/app/init', type='json', auth="user", csrf=True)
+    @http.route('/kicker/init', type='json', auth="user", csrf=True)
     def init(self, **kw):
         user_info = request.env.user.read(['name', 'image_small'])
         return user_info
 
-    @http.route('/app/dashboard', type='json', auth='user', csrf=False)
+    @http.route('/kicker/dashboard', type='json', auth='user', csrf=False)
     def dashboard(self, **kw):
         User = request.env['res.users'].sudo()
         teammates = list(map(lambda u: User.env.ref('kicker.%s' % u), ['dbo', 'jem', 'mat']))
@@ -74,7 +76,7 @@ class KickerController(http.Controller):
         return demo_data
 
 
-    @http.route('/app/community', type='json', auth='user', csrf=False)
+    @http.route('/kicker/community', type='json', auth='user', csrf=False)
     def community(self, **kw):
         User = request.env['res.users'].sudo()
         usual = list(map(lambda u: User.env.ref('kicker.%s' % u), ['dbo', 'jem', 'mat']))
@@ -114,3 +116,23 @@ class KickerController(http.Controller):
         if not user:
             raise werkzeug.exceptions.NotFound()
         return user.read(['id', 'name', 'login', 'email'])[0]
+
+    @http.route('/sw.js', type='http', auth='public')
+    def service_worker(self, **kw):
+        bundles = ['web.assets_common', 'web.assets_frontend']
+        attachments = request.env['ir.attachment']
+        for bundle in bundles:
+            attachments += attachments.search([
+                ('url', '=like', '/web/content/%-%/{0}%'.format(bundle))
+            ])
+        urls = attachments.mapped('url')
+        js_file = get_module_resource('kicker', 'static/src/js', 'sw.js.jinja')
+        with open(js_file) as f:
+            js_content = f.read()
+        T = jinja2.Template(js_content)
+        js = T.render({'urls': urls})
+        headers = {
+            'Content-Type': 'text/javascript',
+        }
+        response = http.request.make_response(js, headers=headers)
+        return response

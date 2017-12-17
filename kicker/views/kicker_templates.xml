@@ -116,4 +116,26 @@ App Pages Templates
   </t>
 </template>
 
+<template id="service_worker" name="Kicker ServiceWorker JS">
+    <![CDATA[
+    var CACHE_NAME = 'kicker-cache-v1';
+    var urlsToCache = [
+    '/<t t-esc="bundle-hash"/>',
+    '/styles/main.css',
+    '/script/main.js'
+    ];
+    
+    self.addEventListener('install', function(event) {
+    // Perform install steps
+    event.waitUntil(
+    caches.open(CACHE_NAME)
+    .then(function(cache) {
+    console.log('Opened cache');
+    return cache.addAll(urlsToCache);
+    })
+    );
+    });
+]]>
+</template>
+
 </odoo>
