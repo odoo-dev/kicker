@@ -45,7 +45,6 @@ var Dashboard = Widget.extend({
             this._super.apply(this, arguments)
         )
             .then(function(data) {
-                console.log(data);
                 self.wins = data.wins;
                 self.losses = data.losses;
                 self.teammates = data.teammates;
@@ -78,7 +77,6 @@ var Community = Widget.extend({
             this._super.apply(this, arguments)
         )
             .then(function(data) {
-                console.log(data);
                 self.usual = data.usual;
                 self.rare = data.rare;
                 self.renderElement();            
@@ -89,7 +87,8 @@ var Community = Widget.extend({
 var App = Widget.extend({
   events: {
     'click #burger-toggle, .overlay': '_toggleMenu',
-    "swipeLeft .overlay, #sidebar": '_toggleMenu',
+    "swipeleft .overlay, #sidebar, #top-header": function (ev) {this._toggleMenu(ev, 'close');},
+    'swiperight #top-header, .o_kicker_main':  function (ev) {this._toggleMenu(ev, 'open');},
     'click a[data-router]': '_onMenuClick',
   },
   pages: {
@@ -122,23 +121,28 @@ var App = Widget.extend({
     return this._super.apply(this, arguments);
   },
 
-  _toggleMenu: function (ev) {
-    // open sidebar
-    this.$('#sidebar').toggleClass('active');
-    // fade in the overlay
-    this.$('.overlay').fadeToggle();
-  },
-  _closeMenu: function (ev) {
-    // open sidebar
-    this.$('#sidebar').removeClass('active');
-    // fade in the overlay
-    this.$('.overlay').fadeOut();
-  },
-  
+  _toggleMenu: function (ev, force) {
+    if (force === 'open') {
+        this.$('#sidebar').addClass('active');
+        this.$('.overlay').fadeIn();
+
+    } else if (force === 'close') {
+        this.$('#sidebar').removeClass('active');
+        this.$('.overlay').fadeOut();
+
+    } else {
+        this.$('#sidebar').toggleClass('active');
+        this.$('.overlay').fadeToggle();
+    }
+  },  
   _onMenuClick: function (ev) {
       ev.preventDefault();
-      Router.navigate(ev.target.pathname);
-      this._closeMenu();
+      var link = $(ev.target).closest('a');
+      if (link.length > 0) {
+          var path = link[0].pathname;
+          Router.navigate(path);
+      }
+      this._toggleMenu({}, 'close');
   },
   _switchPage: function (target) {
       var pageConstructor = this.pages[target];
@@ -146,7 +150,7 @@ var App = Widget.extend({
           this.content = new pageConstructor(this, {});
           this.content.replace(this.$('.o_kicker_main'));
       }
-      this._closeMenu();
+      this._toggleMenu({}, 'close');
 
   },
 });
