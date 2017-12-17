@@ -46,7 +46,7 @@ respondFromNetworkThenCache = function (event) {
   const request = event.request
   event.respondWith(
     fetch(request)
-      .then(response => addToCache(request, response))
+      //.then(response => addToCache(request, response))
       .catch(() => fetchFromCache(event))
       .catch(() => offlineResponse())
   )
@@ -77,3 +77,4 @@ self.addEventListener('fetch', function (event) {
         }
     }
 });
+
