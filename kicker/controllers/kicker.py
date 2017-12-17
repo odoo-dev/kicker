@@ -88,7 +88,7 @@ class KickerController(http.Controller):
         return demo_data
 
     @http.route(['/kicker/avatar', '/kicker/avatar/<int:user_id>'], type='http', auth="public")
-    def profile(self, user_id=None, **kw):
+    def avatar(self, user_id=None, **kw):
         if not user_id:
             user_id = request.env.uid
         status, headers, content = binary_content(model='res.users', id=user_id, field='image_medium', default_mimetype='image/png', env=request.env(user=SUPERUSER_ID))
