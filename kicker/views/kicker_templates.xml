@@ -64,6 +64,7 @@ App Pages Templates
   <t t-call="kicker.layout">
     <t t-set="head">
         <link rel="manifest" href="/kicker/static/manifest.webmanifest"/>
+        <meta name="theme-color" content="#875a7b"/>
     </t>
     <!-- Close Sidebar Button -->
     <div id="top-header">
