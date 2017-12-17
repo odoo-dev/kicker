@@ -113,6 +113,9 @@ App Pages Templates
       </div>
 
     </div> <!-- /container -->
+    <div class="offline-toast hidden">
+        You are currently off-line. <btn class="btn btn-xs btn-default">So what?</btn>
+    </div>
   </t>
 </template>
 

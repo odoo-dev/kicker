@@ -212,5 +212,19 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+// Display "offline" indicator when connectivity is lost
+window.addEventListener('load', function(event) {
+  function updateOnlineStatus(event) {
+    if (!navigator.onLine) {
+        document.querySelector('.offline-toast').classList.remove('hidden');
+    } else {        
+        document.querySelector('.offline-toast').classList.add('hidden');
+    }
+  }
+
+  window.addEventListener('online',  updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+});
+
 
 });
