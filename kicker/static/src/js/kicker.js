@@ -68,13 +68,14 @@ var Profile = Widget.extend({
         this.unsaved_changes = false;
         this.user = undefined;
     },
-    willStart: function() {
+    start: function() {
         var self = this;
         return rpc.query({
             route: '/kicker/user'
         })
         .then(function (user_data) {
             self.user = user_data;
+            self.renderElement();
         });
     },
 })
@@ -118,6 +119,7 @@ var CommunityProfile = Widget.extend({
 })
 
 var App = Widget.extend({
+  xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
   events: {
     'click #burger-toggle, .overlay': '_toggleMenu',
     "swipeleft .overlay, #sidebar, #top-header": function (ev) {this._toggleMenu(ev, 'close');},
@@ -149,11 +151,12 @@ var App = Widget.extend({
       .add(/community/, function () {
           self._switchPage('community');
       })
+      .add(function () {
+          self._switchPage('dashboard');
+      })
       .listen();
   },
-  start: function () {
-    this.content = new Dashboard(this, {});
-    this.content.replace(this.$('.o_kicker_content'));
+  willStart: function () {
     Router.check();
     return this._super.apply(this, arguments);
   },
