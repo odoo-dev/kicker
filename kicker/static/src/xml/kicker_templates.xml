@@ -65,16 +65,24 @@
             </div>
         </div>
     </t>
-    
+
     <t t-name="Profile">
         <div class="container-fluid o_kicker_main">
-            <div class="text-center">
+            <div t-if="widget.user" class="text-center">
                 <div class="text-right mb8 mt8">
                     <div class="btn btn-xs">Update Profile <i class="fa fa-pencil"/></div>
                 </div>
                 <img t-attf-src="/kicker/avatar/{{ widget.user.id }}" class="img-circle"/>
                 <h3><t t-esc="widget.user.name"/></h3>
                 <h6>You suck at this. Please stop.</h6>
+            </div>
+            <div t-else="" class="text-center">
+                <div class="text-right mb8 mt8">
+                    <div class="btn btn-xs btn-disabled">Update Profile <i class="fa fa-pencil"/></div>
+                </div>
+                <img src="/kicker/static/img/user.svg" class="img-circle avatar_placeholder" width="128px"/>
+                <h3>Loading...</h3>
+                <h6>This will only take a moment.</h6>
             </div>
         </div>
     </t>
@@ -150,7 +158,6 @@
                 </div>
             </div>
         </div>
-
     </t>
 
 </templates>
