@@ -105,3 +105,12 @@ class KickerController(http.Controller):
         response = request.make_response(image_base64, headers)
         response.status = str(status)
         return response
+
+    @http.route(['/kicker/user', '/kicker/user/<int:user_id>'], type='json', auth='user')
+    def user_info(self, user_id=None, **kw):
+        if not user_id:
+            user_id = request.env.uid
+        user = request.env['res.users'].browse(user_id)
+        if not user:
+            raise werkzeug.exceptions.NotFound()
+        return user.read(['id', 'name', 'login', 'email'])[0]

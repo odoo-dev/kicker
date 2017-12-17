@@ -63,6 +63,20 @@ var Dashboard = Widget.extend({
 var Profile = Widget.extend({
     template: 'Profile',
     xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
+    init: function (parents, options) {
+        this._super.apply(this, arguments);
+        this.unsaved_changes = false;
+        this.user = undefined;
+    },
+    willStart: function() {
+        var self = this;
+        return rpc.query({
+            route: '/kicker/user'
+        })
+        .then(function (user_data) {
+            self.user = user_data;
+        });
+    },
 })
 
 var Community = Widget.extend({
@@ -84,6 +98,25 @@ var Community = Widget.extend({
     },
 })
 
+var CommunityProfile = Widget.extend({
+    template: 'Profile',
+    xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
+    init: function (parents, options) {
+        this._super.apply(this, arguments);
+        this.user_id = options.user_id;
+        this.user = undefined;
+    },
+    willStart: function() {
+        var self = this;
+        return rpc.query({
+            route: '/kicker/user/' + this.user_id
+        })
+        .then(function (user_data) {
+            self.user = user_data;
+        });
+    },
+})
+
 var App = Widget.extend({
   events: {
     'click #burger-toggle, .overlay': '_toggleMenu',
@@ -95,19 +128,23 @@ var App = Widget.extend({
       dashboard: Dashboard,
       profile: Profile,
       community: Community,
+      communityProfile: CommunityProfile,
   },
   init: function (parent, options) {
       this._super.apply(this, arguments);
       var self = this;
       Router.config({ mode: 'history'});
 
-      // adding routes
+      // adding routes (most specific to less specific)
       Router
       .add(/dashboard/, function () {
           self._switchPage('dashboard');
       })
       .add(/profile/, function () {
           self._switchPage('profile');
+      })
+      .add(/community\/user\/(.*)/, function (user_id) {
+          self._switchPage('communityProfile', {user_id: user_id});
       })
       .add(/community/, function () {
           self._switchPage('community');
@@ -144,10 +181,10 @@ var App = Widget.extend({
       }
       this._toggleMenu({}, 'close');
   },
-  _switchPage: function (target) {
+  _switchPage: function (target, options) {
       var pageConstructor = this.pages[target];
       if (!(this.content instanceof pageConstructor)) {
-          this.content = new pageConstructor(this, {});
+          this.content = new pageConstructor(this, options);
           this.content.replace(this.$('.o_kicker_main'));
       }
       this._toggleMenu({}, 'close');
