@@ -29,13 +29,13 @@
 
       <t t-call-assets="web.assets_common" t-js="false"/>
       <t t-call-assets="web.assets_frontend" t-js="false"/>
-      <t t-call-assets="web.assets_common" t-css="false"/>
-      <t t-call-assets="web.assets_frontend" t-css="false"/>
 
       <t t-raw="head or ''"/>
     </head>
     <body t-att-class="body_classname">
       <t t-raw="0"/>
+      <t t-call-assets="web.assets_common" t-css="false"/>
+      <t t-call-assets="web.assets_frontend" t-css="false"/>
     </body>
   </html>
 </template>
@@ -62,6 +62,9 @@ App Pages Templates
 
 <template id="app" name="kickr.io">
   <t t-call="kicker.layout">
+    <t t-set="head">
+        <link rel="manifest" href="/kicker/static/manifest.webmanifest"/>
+    </t>
     <!-- Close Sidebar Button -->
     <div id="top-header">
         <div class="col-xs-8 col-md-10">

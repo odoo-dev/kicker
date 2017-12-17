@@ -139,7 +139,7 @@ var App = Widget.extend({
 
       // adding routes (most specific to less specific)
       Router
-      .add(/dashboard/, function () {
+      .add(/dahboard/, function () {
           self._switchPage('dashboard');
       })
       .add(/profile/, function () {

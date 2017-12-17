@@ -1,0 +1,14 @@
+{
+  "name": "kickr.io",
+  "short_name": "kickr",
+  "start_url": "/kicker/app",
+  "display": "standalone",
+  "background_color": "#fff",
+  "theme_color": "#875a7b",
+  "description": "Watch out for rabbits!",
+  "icons": [{
+    "src": "/kicker/static/img/icon.png",
+    "sizes": "512x512",
+    "type": "image/png"
+  }]
+}
