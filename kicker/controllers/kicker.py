@@ -32,10 +32,6 @@ class KickerController(http.Controller):
             'bg': ('yes_%s' if kicker.is_available else 'no_%s') % rand_bg,
         })
 
-    @http.route(['/kicker/app', "/kicker/app/<path:route>"], auth="user")
-    def app(self, **kw):
-        return request.render('kicker.app', {'body_classname': 'o_kicker_app', 'user': request.env.user})
-
     @http.route(['/kicker/ping'], auth='none', csrf=False)
     def ping(self, token=False, status="", **kw):
         """
@@ -53,13 +49,12 @@ class KickerController(http.Controller):
                     _logger.error("Kicker Ping failed when evaluting status")
             return False
 
-    # JSON routes for the JS app
-    @http.route('/kicker/init', type='json', auth="user", csrf=True)
-    def init(self, **kw):
-        user_info = request.env.user.read(['name', 'image_small'])
-        return user_info
+    @http.route(['/kicker/', "/kicker/<path:route>"], auth="user")
+    def app(self, **kw):
+        return request.render('kicker.app', {'body_classname': 'o_kicker_app', 'user': request.env.user})
 
-    @http.route('/kicker/dashboard', type='json', auth='user', csrf=False)
+    # JSON routes
+    @http.route('/kicker/json/dashboard', type='json', auth='user', csrf=False)
     def dashboard(self, **kw):
         User = request.env['res.users'].sudo()
         teammates = list(map(lambda u: User.env.ref('kicker.%s' % u), ['dbo', 'jem', 'mat']))
@@ -75,8 +70,7 @@ class KickerController(http.Controller):
         }
         return demo_data
 
-
-    @http.route('/kicker/community', type='json', auth='user', csrf=False)
+    @http.route('/kicker/json/community', type='json', auth='user', csrf=False)
     def community(self, **kw):
         User = request.env['res.users'].sudo()
         usual = list(map(lambda u: User.env.ref('kicker.%s' % u), ['dbo', 'jem', 'mat']))
@@ -89,6 +83,16 @@ class KickerController(http.Controller):
         }
         return demo_data
 
+    @http.route(['/kicker/json/user', '/kicker/json/user/<int:user_id>'], type='json', auth='user')
+    def user_info(self, user_id=None, **kw):
+        if not user_id:
+            user_id = request.env.uid
+        user = request.env['res.users'].browse(user_id)
+        if not user:
+            raise werkzeug.exceptions.NotFound()
+        return user.read(['id', 'name', 'login', 'email'])[0]
+
+    # Non-json routes
     @http.route(['/kicker/avatar', '/kicker/avatar/<int:user_id>'], type='http', auth="public")
     def avatar(self, user_id=None, **kw):
         if not user_id:
@@ -108,17 +112,8 @@ class KickerController(http.Controller):
         response.status = str(status)
         return response
 
-    @http.route(['/kicker/user', '/kicker/user/<int:user_id>'], type='json', auth='user')
-    def user_info(self, user_id=None, **kw):
-        if not user_id:
-            user_id = request.env.uid
-        user = request.env['res.users'].browse(user_id)
-        if not user:
-            raise werkzeug.exceptions.NotFound()
-        return user.read(['id', 'name', 'login', 'email'])[0]
-
-    @http.route('/sw.js', type='http', auth='public')
-    def service_worker(self, **kw):
+    @http.route('/kicker/sw.js', type='http', auth='public')
+    def serviceworker(self, **kw):
         bundles = ['web.assets_common', 'web.assets_frontend']
         attachments = request.env['ir.attachment']
         for bundle in bundles:
@@ -126,11 +121,7 @@ class KickerController(http.Controller):
                 ('url', '=like', '/web/content/%-%/{0}%'.format(bundle))
             ])
         urls = attachments.mapped('url')
-        js_file = get_module_resource('kicker', 'static/src/js', 'sw.js.jinja')
-        with open(js_file) as f:
-            js_content = f.read()
-        T = jinja2.Template(js_content)
-        js = T.render({'urls': urls})
+        js = request.env['ir.ui.view'].render_template('kicker.service_worker', values={'urls': urls})
         headers = {
             'Content-Type': 'text/javascript',
         }

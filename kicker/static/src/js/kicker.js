@@ -40,7 +40,7 @@ var Dashboard = Widget.extend({
         var self = this;
         return $.when(
             rpc.query({
-                route: '/kicker/dashboard',
+                route: '/kicker/json/dashboard',
             }),
             this._super.apply(this, arguments)
         )
@@ -71,7 +71,7 @@ var Profile = Widget.extend({
     start: function() {
         var self = this;
         return rpc.query({
-            route: '/kicker/user'
+            route: '/kicker/json/user'
         })
         .then(function (user_data) {
             self.user = user_data;
@@ -87,7 +87,7 @@ var Community = Widget.extend({
         var self = this;
         return $.when(
             rpc.query({
-                route: '/kicker/community',
+                route: '/kicker/json/community',
             }),
             this._super.apply(this, arguments)
         )
@@ -110,7 +110,7 @@ var CommunityProfile = Widget.extend({
     willStart: function() {
         var self = this;
         return rpc.query({
-            route: '/kicker/user/' + this.user_id
+            route: '/kicker/json/user/' + this.user_id
         })
         .then(function (user_data) {
             self.user = user_data;
@@ -160,7 +160,13 @@ var App = Widget.extend({
     Router.check();
     return this._super.apply(this, arguments);
   },
-
+  start: function () {
+      this.$('[data-toggle="popover"]').popover({
+          placement: 'top',
+           trigger: 'click focus',
+          container: 'body',
+      });
+  },
   _toggleMenu: function (ev, force) {
     if (force === 'open') {
         this.$('#sidebar').addClass('active');
@@ -203,7 +209,7 @@ app.attachTo(el);
 // Register serviceworker if applicable
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function() {
-    navigator.serviceWorker.register('/sw.js').then(function(registration) {
+    navigator.serviceWorker.register('/kicker/sw.js').then(function(registration) {
       // Registration was successful
       console.log('ServiceWorker registration successful with scope: ', registration.scope);
     }, function(err) {

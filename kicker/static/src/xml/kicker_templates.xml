@@ -130,7 +130,7 @@
         <div t-attf-class="{{ card_class }}">
             <div class="panel text-center">
                 <div class="panel-body">
-                    <a t-attf-href="/kicker/app/community/user/{{ user.id }}" data-router="true" class="o_kicker_user_link">
+                    <a t-attf-href="/kicker/community/user/{{ user.id }}" data-router="true" class="o_kicker_user_link">
                         <t t-if="user.hasOwnProperty('fav')">
                             <i t-attf-class="o_kicker_user_fav fa {{ user.fav ? 'fa-heart':'fa-heart-o'}}"/>
                         </t>

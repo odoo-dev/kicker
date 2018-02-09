@@ -92,10 +92,10 @@ App Pages Templates
 
       <!-- Sidebar Links -->
       <ul class="nav nav-pills nav-stacked">
-        <li><a href="/kicker/app/dashboard" data-router="true">Dashboard</a></li>
-        <li><a href="/kicker/app/profile" data-router="true">Profile</a></li>
+        <li><a href="/kicker/dashboard" data-router="true">Dashboard</a></li>
+        <li><a href="/kicker/profile" data-router="true">Profile</a></li>
         <li><a href="#">Stats</a></li>
-        <li><a href="/kicker/app/community" data-router="true">Community</a></li>
+        <li><a href="/kicker/community" data-router="true">Community</a></li>
         <li><a href="#">Log Out</a></li>
       </ul>
     </nav>
@@ -114,31 +114,111 @@ App Pages Templates
 
     </div> <!-- /container -->
     <div class="offline-toast hidden">
-        You are currently off-line. <btn class="btn btn-xs btn-default">So what?</btn>
+        You are currently off-line.
+        <btn class="btn btn-xs btn-default"
+             data-toggle="popover"
+             data-title="Working Off-line"
+             data-content="When off-line, you can only access cached data; posting results is disabled and some content may be out-of-date. Everything will work normally once you get back online.">So what?</btn>
     </div>
   </t>
 </template>
 
 <template id="service_worker" name="Kicker ServiceWorker JS">
-    <![CDATA[
-    var CACHE_NAME = 'kicker-cache-v1';
+    var CACHE_NAME = 'kicker-cache-v5';
     var urlsToCache = [
-    '/<t t-esc="bundle-hash"/>',
-    '/styles/main.css',
-    '/script/main.js'
+    '/kicker/app',
+    <t t-foreach="urls" t-as="url">
+        '<t t-esc="url"/>',
+    </t>
     ];
-    
-    self.addEventListener('install', function(event) {
-    // Perform install steps
-    event.waitUntil(
-    caches.open(CACHE_NAME)
-    .then(function(cache) {
-    console.log('Opened cache');
-    return cache.addAll(urlsToCache);
-    })
-    );
+
+    /* Utils functions (e.g. fetches, caching, etc.) */
+    addToCache = function (request, response) {
+        if (response.ok) {
+            const copy = response.clone()
+            caches.open(CACHE_NAME).then(function (cache) {
+                cache.put(request, copy)
+            }
+            )
+            return response
+        }
+    }
+    fetchFromCache = function (event) {
+        return caches.match(event.request).then(function (response) {
+            if (!response) {
+                throw Error('${event.request.url} not found in cache')
+            }
+            return response
+        }
+        )
+    }
+
+    offlineResponse = function () {
+        return new Response('Sorry, the application is offline.')
+    }
+
+    respondFromCacheThenNetwork = function (event) {
+      // Check cache first, then network
+      const request = event.request
+      event.respondWith(
+        fetchFromCache(event)
+          .catch(() => fetch(request))
+          .then(response => addToCache(request, response))
+          .catch(() => offlineResponse())
+        )
+    }
+
+    respondFromNetworkThenCache = function (event) {
+      // Check network first, then cache
+      const request = event.request
+      event.respondWith(
+        fetch(request)
+          .then(response => addToCache(request, response))
+          .catch(() => fetchFromCache(event))
+          .catch(() => offlineResponse())
+      )
+    }
+
+    shouldHandleFetch = function (event) {
+        return (
+            event.request.method.toLowerCase() === 'get'
+            &amp;&amp; (event.request.url.indexOf('google-analytics.com') === -1)
+            &amp;&amp; (event.request.url.indexOf('googleapis.com') === -1));
+    }
+
+
+    /* Event listeners &amp; lifecycle */
+    self.addEventListener('install', function (event) {
+      // Perform install steps
+      event.waitUntil(
+        caches.open(CACHE_NAME)
+          .then(function(cache) {
+            console.log('Opened cache');
+            return cache.addAll(urlsToCache);
+          })
+      );
     });
-]]>
+    
+    self.addEventListener('activate', function(event) {
+    event.waitUntil(
+      caches.keys().then(function(cacheNames) {
+        return Promise.all(
+          cacheNames.filter(function(cacheName) {
+            return cacheName !== CACHE_NAME;
+          }).map(function(cacheName) {
+            return caches.delete(cacheName);
+          })
+        );
+      })
+    );
+  });
+
+
+    self.addEventListener('fetch', function (event) {
+        if (shouldHandleFetch(event)) {
+            respondFromNetworkThenCache(event)
+        }
+    });
 </template>
 
 </odoo>
