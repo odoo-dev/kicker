@@ -103,7 +103,7 @@ class KickerGame(models.Model):
 
     @api.depends('team_score_ids', 'team_score_ids.score')
     def _compute_result(self):
-        ordered_scores = sorted(self.mapped('score_ids'), key=attgetter('score')
+        ordered_scores = sorted(self.mapped('score_ids'), key=attgetter('score'))
         for game in self:
             scores_for_team = filter(lambda s: s.game_id == game.id,ordered_score)
             game.winning_team = scores_for_team[0]
