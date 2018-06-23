@@ -111,6 +111,8 @@
             <tree string="Teams">
                 <field name="name"/>
                 <field name="long_name"/>
+                <field name="wins"/>
+                <field name="losses"/>
             </tree>
         </field>
     </record>
@@ -125,6 +127,8 @@
                 </group>
                 <group>
                     <field name="player_ids" widget="many2many_tags"/>
+                    <field name="wins"/>
+                    <field name="losses"/>
                     <field name="score_ids">
                         <tree>
                             <field name="game_id"/>

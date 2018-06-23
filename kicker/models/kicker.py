@@ -82,13 +82,24 @@ class KickerTeam(models.Model):
 
     name = fields.Char(string='Nickname', required=True)
     long_name = fields.Char(compute='_compute_long_name', string='Players\' Names')
-    player_ids = fields.Many2many('res.partner', string='Players')
+    player_ids = fields.Many2many('res.partner', string='Players', relation='kicker_team_res_partner_rel')
     score_ids = fields.One2many('kicker.team.score', 'team_id')
+    wins = fields.Integer(compute='_compute_stats', store=True)
+    losses = fields.Integer(compute='_compute_stats', store=True)
 
     @api.depends('player_ids', 'player_ids.name')
     def _compute_long_name(self):
         for team in self:
             team.long_name = ' - '.join(team.player_ids.mapped('name'))
+    
+    @api.depends('score_ids', 'score_ids.won')
+    def _compute_stats(self):
+        data = self.env['kicker.team.score'].read_group([('team_id', 'in', self.ids)], fields=['team_id', 'won'], groupby=['team_id', 'won'], lazy=False)
+        for team in self:
+            wins = list(filter(lambda d: d['team_id'][0] == team.id and d['won'], data))
+            team.wins = wins and wins[0]['__count']
+            losses = list(filter(lambda d: d['team_id'][0] == team.id and not d['won'], data))
+            team.losses = losses and losses[0]['__count']
 
 
 class KickerTeamScore(models.Model):
@@ -98,6 +109,12 @@ class KickerTeamScore(models.Model):
     team_id = fields.Many2one('kicker.team', 'Playing Team')
     game_id = fields.Many2one('kicker.game', string='Kicker Game')
     score = fields.Integer(string='Score')
+    won = fields.Boolean(compute='_compute_won', store=True)
+
+    @api.depends('game_id', 'score')
+    def _compute_won(self):
+        for score in self:
+            score.won = score.team_id == score.game_id.winning_team_id
 
 
 class KickerGame(models.Model):
@@ -121,7 +138,9 @@ class KickerGame(models.Model):
         ordered_scores = self.mapped('score_ids').sorted(lambda s: s.score, reverse=True)
         for game in self:
             scores_for_team = list(filter(lambda s: s.game_id == game,ordered_scores))
-            if len(scores_for_team) < 2:
+            if len(scores_for_team) < 2 or scores_for_team[0].score == scores_for_team[1].score:
+                game.winning_team_id = False
+                game.losing_team_id = False
                 continue
             game.winning_team_id = scores_for_team[0].team_id
             game.losing_team_id = scores_for_team[1].team_id
