@@ -1,5 +1,6 @@
 
 import logging
+from operator import attrgetter
 import uuid
 
 import odoo
@@ -73,3 +74,37 @@ class Ping(models.Model):
             'available': ping.available,
         })
         return True
+
+
+class KickerTeam(models.Model):
+    _name = 'kicker.team'
+    _description = 'Kicker Team'
+
+    player_ids = fields.Many2many('res.partner', string='Players')
+
+
+class KickerTeamScore(models.Model):
+    _name = 'kicker.team.score'
+    _description = 'Kicker Team Score'
+
+    team_id = fields.Many2one('kicker.team', 'Playing Team')
+    game_id = fields.Many2one('kicker.game', string='Kicker Game')
+    score = fields.Integer(string='Final Score')
+
+
+class KickerGame(models.Model):
+    _name = 'kicker.game'
+    _description = 'Kicker Game'
+
+    score_ids = fields.One2many('kicker.team.score', 'game_id', string='Team Scores')
+    kicker_id = fields.Many2one('kicker.kicker', string='Kicker')
+    winning_team_id = fields.Many2one('kicker.team', compute='_compute_result', store=True)
+    losing_team_id = fields.Many2one('kicker.team', compute='_compute_result', store=True)
+
+    @api.depends('team_score_ids', 'team_score_ids.score')
+    def _compute_result(self):
+        ordered_scores = sorted(self.mapped('score_ids'), key=attgetter('score')
+        for game in self:
+            scores_for_team = filter(lambda s: s.game_id == game.id,ordered_score)
+            game.winning_team = scores_for_team[0]
+            game.winning_team = scores_for_team[1]
