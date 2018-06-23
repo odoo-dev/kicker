@@ -1,11 +1,11 @@
 
 import logging
-from operator import attrgetter
 import uuid
 
 import odoo
-from odoo import api, fields, models, SUPERUSER_ID
+from odoo import api, fields, models, SUPERUSER_ID, _
 from odoo.tools.misc import DEFAULT_SERVER_DATETIME_FORMAT
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -80,7 +80,15 @@ class KickerTeam(models.Model):
     _name = 'kicker.team'
     _description = 'Kicker Team'
 
+    name = fields.Char(string='Nickname', required=True)
+    long_name = fields.Char(compute='_compute_long_name', string='Players\' Names')
     player_ids = fields.Many2many('res.partner', string='Players')
+    score_ids = fields.One2many('kicker.team.score', 'team_id')
+
+    @api.depends('player_ids', 'player_ids.name')
+    def _compute_long_name(self):
+        for team in self:
+            team.long_name = ' - '.join(team.player_ids.mapped('name'))
 
 
 class KickerTeamScore(models.Model):
@@ -89,7 +97,7 @@ class KickerTeamScore(models.Model):
 
     team_id = fields.Many2one('kicker.team', 'Playing Team')
     game_id = fields.Many2one('kicker.game', string='Kicker Game')
-    score = fields.Integer(string='Final Score')
+    score = fields.Integer(string='Score')
 
 
 class KickerGame(models.Model):
@@ -103,10 +111,17 @@ class KickerGame(models.Model):
     winning_team_id = fields.Many2one('kicker.team', compute='_compute_result', store=True)
     losing_team_id = fields.Many2one('kicker.team', compute='_compute_result', store=True)
 
+    @api.constrains('score_ids')
+    def _max_team(self):
+        if len(self.score_ids) > 2:
+            raise ValidationError(_("There can only be 2 teams by game."))
+    
     @api.depends('score_ids', 'score_ids.score')
     def _compute_result(self):
-        ordered_scores = sorted(self.mapped('score_ids'), key=attgetter('score'))
+        ordered_scores = self.mapped('score_ids').sorted(lambda s: s.score, reverse=True)
         for game in self:
-            scores_for_team = filter(lambda s: s.game_id == game.id,ordered_score)
-            game.winning_team = scores_for_team[0]
-            game.winning_team = scores_for_team[1]
+            scores_for_team = list(filter(lambda s: s.game_id == game,ordered_scores))
+            if len(scores_for_team) < 2:
+                continue
+            game.winning_team_id = scores_for_team[0].team_id
+            game.losing_team_id = scores_for_team[1].team_id
