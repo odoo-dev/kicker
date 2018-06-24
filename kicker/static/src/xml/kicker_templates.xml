@@ -10,11 +10,11 @@
                         <div class="panel-body">
                             <div class="row">
                                 <div class="col-xs-6">
-                                    <h4><t t-esc="widget.wins || '--'"/></h4>
+                                    <h4><t t-esc="widget.wins !== undefined ? widget.wins:'--'"/></h4>
                                     <h6>Won matches</h6>
                                 </div>
                                 <div class="col-xs-6">
-                                    <h4><t t-esc="widget.losses || '--'"/></h4>
+                                    <h4><t t-esc="widget.losses !== undefined ? widget.losses:'--'"/></h4>
                                     <h6>Lost matches</h6>
                                 </div>
                             </div>
@@ -35,13 +35,13 @@
                     <div class="container-fluid">
                         <div class="row o_kicker_user_row">
                             <t t-if="widget.teammates">
-                                <t t-foreach="widget.teammates" t-as="user">
-                                    <t t-call="UserCard">
+                                <t t-foreach="widget.teammates" t-as="player">
+                                    <t t-call="PlayerCard">
                                         <t t-set="card_class" t-value="'o_kicker_user_card'"/>
                                     </t>
                                 </t>
                             </t>
-                            <t t-else="" t-call="UserCardLoader">
+                            <t t-else="" t-call="PlayerCardLoader">
                                 <t t-set="card_class" t-value="'o_kicker_user_card'"/>
                             </t>
                         </div>
@@ -50,13 +50,13 @@
                     <div class="container-fluid">
                         <div class="row o_kicker_user_row">
                             <t t-if="widget.nightmares">
-                                <t t-foreach="widget.nightmares" t-as="user">
-                                    <t t-call="UserCard">
+                                <t t-foreach="widget.nightmares" t-as="player">
+                                    <t t-call="PlayerCard">
                                         <t t-set="card_class" t-value="'o_kicker_user_card'"/>
                                     </t>
                                 </t>
                             </t>
-                            <t t-else="" t-call="UserCardLoader">
+                            <t t-else="" t-call="PlayerCardLoader">
                                 <t t-set="card_class" t-value="'o_kicker_user_card'"/>
                             </t>
                         </div>
@@ -68,19 +68,19 @@
 
     <t t-name="Profile">
         <div class="container-fluid o_kicker_main">
-            <div t-if="widget.user" class="text-center">
+            <div t-if="widget.player" class="text-center">
                 <div class="text-right mb8 mt8">
                     <div class="btn btn-xs">Update Profile <i class="fa fa-pencil"/></div>
                 </div>
-                <img t-attf-src="/kicker/avatar/{{ widget.user.id }}" class="img-circle"/>
-                <h3><t t-esc="widget.user.name"/></h3>
+                <img t-attf-src="/kicker/avatar/{{ widget.player.id }}" class="img-circle"/>
+                <h3><t t-esc="widget.player.name"/></h3>
                 <h6>You suck at this. Please stop.</h6>
             </div>
             <div t-else="" class="text-center">
                 <div class="text-right mb8 mt8">
                     <div class="btn btn-xs btn-disabled">Update Profile <i class="fa fa-pencil"/></div>
                 </div>
-                <img src="/kicker/static/img/user.svg" class="img-circle avatar_placeholder" width="128px"/>
+                <img src="/kicker/static/img/player.svg" class="img-circle avatar_placeholder" width="128px"/>
                 <h3>Loading...</h3>
                 <h6>This will only take a moment.</h6>
             </div>
@@ -126,19 +126,19 @@
     </t>
 
     <!--  Components -->
-    <t t-name="UserCard">
+    <t t-name="PlayerCard">
         <div t-attf-class="{{ card_class }}">
             <div class="panel text-center">
                 <div class="panel-body">
-                    <a t-attf-href="/kicker/community/user/{{ user.id }}" data-router="true" class="o_kicker_user_link">
-                        <t t-if="user.hasOwnProperty('fav')">
-                            <i t-attf-class="o_kicker_user_fav fa {{ user.fav ? 'fa-heart':'fa-heart-o'}}"/>
+                    <a t-attf-href="/kicker/community/player/{{ player.id }}" data-router="true" class="o_kicker_user_link">
+                        <t t-if="player.hasOwnProperty('fav')">
+                            <i t-attf-class="o_kicker_user_fav fa {{ player.fav ? 'fa-heart':'fa-heart-o'}}"/>
                         </t>
                         <p>
-                            <img t-if="user" t-attf-src="/kicker/avatar/{{ user.id }}" class="img-circle" width="64px"/>
-                            <img t-else="" src="/kicker/static/img/user.svg" class="img-circle" width="64px"/>
+                            <img t-if="player" t-attf-src="/kicker/avatar/{{ player.id }}" class="img-circle" width="64px"/>
+                            <img t-else="" src="/kicker/static/img/player.svg" class="img-circle" width="64px"/>
                         </p>
-                        <p t-esc="user.name"/>
+                        <p t-esc="player.name"/>
                         <small class="text-muted">Catchy phrase</small>
                     </a>
                 </div>
@@ -146,12 +146,12 @@
         </div>
     </t>
 
-    <t t-name="UserCardLoader">
+    <t t-name="PlayerCardLoader">
         <div t-attf-class="{{ card_class}}">
             <div class="panel text-center">
                 <div class="panel-body">
                     <p>
-                        <img src="/kicker/static/img/user.svg" class="img-circle avatar_placeholder" width="64px"/>
+                        <img src="/kicker/static/img/player.svg" class="img-circle avatar_placeholder" width="64px"/>
                     </p>
                     <p>Loading...</p>
                     <small class="text-muted">Just a sec</small>

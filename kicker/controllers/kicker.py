@@ -56,19 +56,18 @@ class KickerController(http.Controller):
     # JSON routes
     @http.route('/kicker/json/dashboard', type='json', auth='user', csrf=False)
     def dashboard(self, **kw):
-        User = request.env['res.users'].sudo()
-        teammates = list(map(lambda u: User.env.ref('kicker.%s' % u), ['dbo', 'jem', 'mat']))
-        teammates = reduce(lambda u, v: u + v, teammates)
-        nightmares = list(map(lambda u: User.env.ref('kicker.%s' % u), ['bst', 'elo', 'mat']))
-        nightmares = reduce(lambda u, v: u + v, nightmares)
-        demo_data = {
-            'wins': 36,
-            'losses': 57,
+        partner = request.env.user.partner_id
+        teammates = partner.kicker_team_ids.mapped('player_ids') - partner
+        nightmares = partner.browse()
+        data = {
+            'name': partner.name,
+            'wins': partner.wins,
+            'losses': partner.losses,
             'teammates': teammates.read(['id', 'name']),
             'nightmares': nightmares.read(['id', 'name']),
             'graph': [32.0/52*100, 35.0/53*100, 36.0/54*100, 36.0/56*100, 36.0/57*100]
         }
-        return demo_data
+        return data
 
     @http.route('/kicker/json/community', type='json', auth='user', csrf=False)
     def community(self, **kw):
@@ -83,21 +82,21 @@ class KickerController(http.Controller):
         }
         return demo_data
 
-    @http.route(['/kicker/json/user', '/kicker/json/user/<int:user_id>'], type='json', auth='user')
-    def user_info(self, user_id=None, **kw):
-        if not user_id:
-            user_id = request.env.uid
-        user = request.env['res.users'].browse(user_id)
-        if not user:
+    @http.route(['/kicker/json/player', '/kicker/json/player/<int:player_id>'], type='json', auth='user')
+    def player_info(self, player_id=None, **kw):
+        if not player_id:
+            player_id = request.env.user.partner_id.id
+        partner = request.env['res.partner'].browse(player_id)
+        if not partner:
             raise werkzeug.exceptions.NotFound()
         return user.read(['id', 'name', 'login', 'email'])[0]
 
     # Non-json routes
-    @http.route(['/kicker/avatar', '/kicker/avatar/<int:user_id>'], type='http', auth="public")
-    def avatar(self, user_id=None, **kw):
-        if not user_id:
-            user_id = request.env.uid
-        status, headers, content = binary_content(model='res.users', id=user_id, field='image_medium', default_mimetype='image/png', env=request.env(user=SUPERUSER_ID))
+    @http.route(['/kicker/avatar', '/kicker/avatar/<int:player_id>'], type='http', auth="public")
+    def avatar(self, player_id=None, **kw):
+        if not player_id:
+            player_id = request.env.user.partner_id.id
+        status, headers, content = binary_content(model='res.partner', id=player_id, field='image_medium', default_mimetype='image/png', env=request.env(user=SUPERUSER_ID))
 
         if not content:
             img_path = get_module_resource('web', 'static/src/img', 'placeholder.png')

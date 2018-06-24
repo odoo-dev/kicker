@@ -50,6 +50,7 @@ var Dashboard = Widget.extend({
                 self.teammates = data.teammates;
                 self.nightmares = data.nightmares;
                 self.chartData.series = [data.graph];
+                self.name = data.name;
                 self.renderElement();            
             });
     },
@@ -58,7 +59,7 @@ var Dashboard = Widget.extend({
         new Chartist.Line(this.$('.ct-chart')[0], this.chartData, this.chartOptions);
         return result;
     }    
-})
+});
 
 var Profile = Widget.extend({
     template: 'Profile',
@@ -66,19 +67,19 @@ var Profile = Widget.extend({
     init: function (parents, options) {
         this._super.apply(this, arguments);
         this.unsaved_changes = false;
-        this.user = undefined;
+        this.player = undefined;
     },
     start: function() {
         var self = this;
         return rpc.query({
-            route: '/kicker/json/user'
+            route: '/kicker/json/player'
         })
-        .then(function (user_data) {
-            self.user = user_data;
+        .then(function (player_data) {
+            self.player = player_data;
             self.renderElement();
         });
     },
-})
+});
 
 var Community = Widget.extend({
     template: 'Community',
@@ -110,13 +111,13 @@ var CommunityProfile = Widget.extend({
     willStart: function() {
         var self = this;
         return rpc.query({
-            route: '/kicker/json/user/' + this.user_id
+            route: '/kicker/json/player/' + this.user_id
         })
-        .then(function (user_data) {
-            self.user = user_data;
+        .then(function (player_data) {
+            self.player = player_data;
         });
     },
-})
+});
 
 var App = Widget.extend({
   xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
@@ -145,8 +146,8 @@ var App = Widget.extend({
       .add(/profile/, function () {
           self._switchPage('profile');
       })
-      .add(/community\/user\/(.*)/, function (user_id) {
-          self._switchPage('communityProfile', {user_id: user_id});
+      .add(/community\/player\/(.*)/, function (player_id) {
+          self._switchPage('communityProfile', {player_id: player_id});
       })
       .add(/community/, function () {
           self._switchPage('community');
