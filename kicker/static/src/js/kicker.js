@@ -243,13 +243,13 @@ var CommunityProfile = Widget.extend({
     xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
     init: function (parents, options) {
         this._super.apply(this, arguments);
-        this.user_id = options.user_id;
-        this.user = undefined;
+        this.player_id = options.player_id;
+        this.player = undefined;
     },
     willStart: function() {
         var self = this;
         return rpc.query({
-            route: '/kicker/json/player/' + this.user_id
+            route: '/kicker/json/player/' + this.player_id
         })
         .then(function (player_data) {
             self.player = player_data;

@@ -86,14 +86,12 @@ class KickerController(http.Controller):
 
     @http.route('/kicker/json/community', type='json', auth='user', csrf=False)
     def community(self, **kw):
-        User = request.env['res.users'].sudo()
-        usual = list(map(lambda u: User.env.ref('kicker.%s' % u), ['dbo', 'jem', 'mat']))
-        usual = reduce(lambda u, v: u + v, usual)
-        rare = list(map(lambda u: User.env.ref('kicker.%s' % u), ['bst', 'elo']))
-        rare = reduce(lambda u, v: u + v, rare)
+        partner = request.env.user.partner_id
+        usual = partner.kicker_team_ids.mapped('player_ids') - partner
+        rare = partner.search([('kicker_player', '=', True), ('id', 'not in', usual.ids)]) - partner
         demo_data = {
-            'usual': usual.read(['id', 'name']),
-            'rare': rare.read(['id', 'name']),
+            'usual': usual.read(['id', 'name', 'tagline']),
+            'rare': rare.read(['id', 'name', 'tagline']),
         }
         return demo_data
 

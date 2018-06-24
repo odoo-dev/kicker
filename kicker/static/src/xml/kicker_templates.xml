@@ -145,14 +145,14 @@
             <div class="container-fluid">
                 <div class="row">
                     <t t-if="widget.usual">
-                        <t t-foreach="widget.usual" t-as="user">
-                            <t t-call="UserCard">
-                                <t t-set="user.fav" t-value="user.name.indexOf('e') !== -1"/>
+                        <t t-foreach="widget.usual" t-as="player">
+                            <t t-call="PlayerCard">
+                                <t t-set="player.fav" t-value="player.name.indexOf('e') !== -1"/>
                                 <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
                             </t>
                         </t>
                     </t>
-                    <t t-else="" t-call="UserCardLoader">
+                    <t t-else="" t-call="PlayerCardLoader">
                         <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
                     </t>
                 </div>
@@ -161,14 +161,14 @@
             <div class="container-fluid">
                 <div class="row">
                     <t t-if="widget.rare">
-                        <t t-foreach="widget.rare" t-as="user">
-                            <t t-call="UserCard">
-                                <t t-set="user.fav" t-value="user.name.indexOf('e') !== -1"/>
+                        <t t-foreach="widget.rare" t-as="player">
+                            <t t-call="PlayerCard">
+                                <t t-set="player.fav" t-value="player.name.indexOf('e') !== -1"/>
                                 <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
                             </t>
                         </t>
                     </t>
-                    <t t-else="" t-call="UserCardLoader">
+                    <t t-else="" t-call="PlayerCardLoader">
                         <t t-set="card_class" t-value="'col-xs-6 col-md-3 col-lg-2'"/>
                     </t>
                 </div>
