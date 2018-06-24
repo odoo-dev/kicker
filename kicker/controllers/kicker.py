@@ -8,6 +8,7 @@ import werkzeug
 
 from odoo import SUPERUSER_ID
 from odoo import api, http
+from odoo.exceptions import UserError
 from odoo.http import request
 from odoo.modules import get_module_resource
 from odoo.addons.base.ir.ir_qweb import AssetsBundle
@@ -19,6 +20,20 @@ _logger = logging.getLogger(__name__)
 class KickerController(http.Controller):
 
     NUM_BG = 10
+
+    def _get_or_create_team(self, player1, player2=None):
+        if not player2:
+            domain = [('player_ids', 'in', player1.ids)]
+            player_ids = [(4, player1.id, False)]
+        else:
+            domain = ['&', ('player_ids', 'in', player1.ids), ('player_ids', 'in', player2.ids)]
+            player_ids = [(4, player1.id, False), (4, player2.id, False)]
+        team = request.env['kicker.team'].sudo().search(domain, limit=1)
+        if not team:
+            team = request.env['kicker.team'].sudo().create({
+                'player_ids': player_ids
+            })
+        return team
 
     @http.route(['/free', '/free/<model("kicker.kicker"):kicker>'], type='http', auth="public")
     def is_the_kicker_free(self, kicker=None, **kw):
@@ -89,7 +104,36 @@ class KickerController(http.Controller):
         partner = request.env['res.partner'].browse(player_id)
         if not partner:
             raise werkzeug.exceptions.NotFound()
-        return user.read(['id', 'name', 'login', 'email'])[0]
+        return partner.read(['id', 'name', 'email'])[0]
+    
+    @http.route(['/kicker/json/players'], type='json', auth='user')
+    def list_players(self, **kw):
+        return request.env['res.partner'].search_read([('kicker_player', '=', True)], fields=['id', 'name'])
+
+    @http.route(['/kicker/json/kickers'], type='json', auth='user')
+    def list_kickers(self, **kw):
+        kickers = request.env['kicker.kicker'].sudo().search_read([], fields=['id', 'nickname'])
+        default = request.env.user.partner_id.main_kicker.id
+        return {'kickers': kickers, 'default': default}
+
+    @http.route(['/kicker/score/submit'], type='json', auth='user', methods=['POST'], csrf=False)
+    def submit_score(self, **post):
+        Partner = request.env['res.partner']
+        player11 = post.get('player11') and Partner.browse(int(post.get('player11')))
+        player21 = post.get('player21') and Partner.browse(int(post.get('player21')))
+        if not player11 and player21:
+            raise UserError(_('There must be at least one player per team.'))
+        player12 = post.get('player12') and Partner.browse(int(post.get('player12')))
+        player22 = post.get('player22') and Partner.browse(int(post.get('player22')))
+        green_team = self._get_or_create_team(player11, player12)
+        red_team = self._get_or_create_team(player21, player22)
+        kicker = request.env['kicker.kicker'].browse(int(post.get('kicker_id')))
+        game = request.env['kicker.game'].sudo().create({
+            'kicker_id': kicker.id,
+            'score_ids': [(0, False, {'team_id': green_team.id, 'score': int(post.get('score1'))}),
+                          (0, False, {'team_id': red_team.id, 'score': int(post.get('score2'))})],
+        })
+        return {'success': True, 'game_id': game.id}
 
     # Non-json routes
     @http.route(['/kicker/avatar', '/kicker/avatar/<int:player_id>'], type='http', auth="public")

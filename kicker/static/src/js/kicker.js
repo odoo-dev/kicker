@@ -98,7 +98,57 @@ var Community = Widget.extend({
                 self.renderElement();            
             });
     },
-})
+});
+
+var AddScore = Widget.extend({
+    template: 'AddScore',
+    xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
+    events: {
+        'submit form.o_kicker_score': '_onSubmit',
+    },
+    start: function () {
+        var self = this;
+        return $.when(
+            rpc.query({
+                route: '/kicker/json/players',
+            }),
+            rpc.query({
+                route: '/kicker/json/kickers',
+            }),
+            this._super.apply(this, arguments)
+        )
+            .then(function(players, kickers) {
+                self.players = players;
+                self.kickers = kickers.kickers;
+                self.default_kicker = kickers.default;
+                self.renderElement();            
+            });
+    },
+    _onSubmit: function (ev) {
+        ev.preventDefault();
+        var self = this;
+        var $form = $(ev.target).closest('form');
+        var formArray = $form.serializeArray();
+        var params = {};
+        for (var i = 0; i < formArray.length; i++){
+            params[formArray[i]['name']] = formArray[i]['value'];
+        }
+        return rpc.query({
+            route: '/kicker/score/submit',
+            params: params
+        }).then(function (result) {
+            if (result.errors) {
+                console.log(result.errors);
+            } else if (result.success) {
+                Router.navigate('/kicker/dashboard');
+            }
+            return result;
+        }).fail(function (type, error) {
+            self._updateStatus($panel, 'failed', error.data.arguments);
+            return type, error;
+        });
+    },
+});
 
 var CommunityProfile = Widget.extend({
     template: 'Profile',
@@ -132,6 +182,7 @@ var App = Widget.extend({
       profile: Profile,
       community: Community,
       communityProfile: CommunityProfile,
+      score: AddScore,
   },
   init: function (parent, options) {
       this._super.apply(this, arguments);
@@ -151,6 +202,9 @@ var App = Widget.extend({
       })
       .add(/community/, function () {
           self._switchPage('community');
+      })
+      .add(/score/, function() {
+        self._switchPage('score');
       })
       .add(function () {
           self._switchPage('dashboard');

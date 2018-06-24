@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data noupdate="0">
-
+<data noupdate="1">
     <record id="group_kicker_manager" model="res.groups">
         <field name="name">Kicker Manager</field>
         <field name="category_id" ref="base.module_category_hidden"/>
         <field name="users" eval="[(4, ref('base.user_root'))]"/>
     </record>
 
+    <record id="res_partner_kicker_portal_rule" model="ir.rule">
+        <field name="name">res.partner.kicker.portal</field>
+        <field name="perm_read" eval="True"/>
+        <field name="perm_write" eval="False"/>
+        <field name="perm_create" eval="False"/>
+        <field name="perm_unlink" eval="False"/>
+        <field name="domain_force">[('kicker_player', '=', True)]</field>
+        <field name="model_id" ref="base.model_res_partner"/>
+        <field name="groups" eval="[(4, ref('base.group_portal'))]"/>
+    </record>
 </data>
 </odoo>
