@@ -72,7 +72,7 @@
                 <div class="text-right mb8 mt8">
                     <div class="btn btn-xs o_kicker_edit">Update Profile <i class="fa fa-pencil"/></div>
                 </div>
-                <img t-attf-src="/kicker/avatar/{{ widget.player.id }}" class="img-circle"/>
+                <img t-attf-src="/kicker/avatar/{{ widget.player.id }}?t={{ new Date().getTime() }}" class="img-circle o_kicker_profile_img"/>
                 <h3><t t-esc="widget.player.name"/></h3>
                 <t t-if="widget.player.tagline">
                     <h5><t t-esc="widget.player.tagline"/></h5>
@@ -92,8 +92,11 @@
                 <div class="text-right mb8 mt8">
                     <div class="btn btn-xs o_kicker_save"><i class="fa fa-check"/> Save changes</div>
                 </div>
-                <div class="text-center mb16">
-                    <img t-attf-src="/kicker/avatar/{{ widget.player.id }}" class="img-circle"/>
+                <input type="file" class="hidden o_kicker_file_upload" name="avatar_file" accept="image/*"/>
+                <div class="mb16 text-center">
+                    <img class="img-circle mb16 o_kicker_profile_img" t-attf-src="/kicker/avatar/{{ widget.player.id }}?t={{ new Date().getTime() }}"/><br/>
+                    <a href="#" class="btn btn-primary o_kicker_profile_img_select">Select Image</a>
+                    <a href="#" class="btn btn-danger o_kicker_profile_img_reset">Reset</a>
                 </div>
                 <div class="form-group">
                     <label class="control-label col-xs-3" for="name">Name</label>

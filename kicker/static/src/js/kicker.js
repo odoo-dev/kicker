@@ -67,6 +67,9 @@ var Profile = Widget.extend({
     events: {
         'click .o_kicker_edit': '_onEdit',
         'click .o_kicker_save': '_onSave',
+        'click .o_kicker_profile_img_select': '_onSelectImg',
+        'click .o_kicker_profile_img_reset': '_onResetImg',
+        'change .o_kicker_file_upload': '_onImgChange',
     },
     init: function (parents, options) {
         this._super.apply(this, arguments);
@@ -96,29 +99,73 @@ var Profile = Widget.extend({
         this.renderElement();   
     },
     _onSave: function (ev) {
+        function readFile(file, params) {
+            var reader = new FileReader();
+            var deferred = $.Deferred();
+        
+            reader.onload = function(event) {
+                deferred.resolve(params['avatar'] = event.target.result.split(',')[1]);
+            };
+            reader.onerror = function() {
+                deferred.reject(this);
+            };
+            if (file) {
+                reader.readAsDataURL(file);
+            } else {
+                deferred.resolve();
+            }
+            return deferred.promise();
+        }
         var self = this;
-        var $form = $(ev.target).closest('form');
+        var $form = $(ev.target).closest('form');        
         var formArray = $form.serializeArray();
         var params = {};
         for (var i = 0; i < formArray.length; i++){
             params[formArray[i]['name']] = formArray[i]['value'];
         }
-        return rpc.query({
+        var files = $form.find('input[type="file"]')[0].files;
+        return readFile(files[0], params)
+        .then(function () {
+            return rpc.query({
             route: '/kicker/json/update_profile',
             params: params
-        }).then(function (result) {
+        })})
+        .then(function (result) {
             if (result.errors) {
                 console.log(result.errors);
             } else if (result.success) {
                 self.edit = false;
                 self.player = result.player;
                 self.renderElement();
+                self.trigger_up('imageChange');
             }
             return result;
         }).fail(function (type, error) {
             console.log(error.data.arguments);
             return type, error;
         });
+    },
+    _onSelectImg: function (ev) {
+        ev.preventDefault();
+        $(ev.target).closest('form').find('.o_kicker_file_upload').trigger('click');
+    },
+    _onImgChange: function (ev) {
+        if (ev.target.files.length) {
+            var $form = $(ev.target).closest('form');
+            var reader = new window.FileReader();
+            reader.onload = function(ev) {
+                var $img = $form.find('.o_kicker_profile_img');
+                $img.attr('data-init-src', $img.attr('src'));
+                $img.attr('src', ev.target.result);
+            };
+            reader.readAsDataURL(ev.target.files[0]);
+            //$form.find('#forum_clear_image').remove();
+        }
+    },
+    _onResetImg: function (ev) {
+        var $form = $(ev.target).closest('form');
+        var $img = $form.find('.o_kicker_profile_img');
+        $form.find('.o_kicker_profile_img').attr("src", $img.attr('data-init-src'));
     },
 });
 
@@ -218,6 +265,9 @@ var App = Widget.extend({
     'swiperight #top-header, .o_kicker_main':  function (ev) {this._toggleMenu(ev, 'open');},
     'click a[data-router]': '_onMenuClick',
   },
+  custom_events: {
+      'imageChange': '_onImgChange',
+  },
   pages: {
       dashboard: Dashboard,
       profile: Profile,
@@ -294,7 +344,10 @@ var App = Widget.extend({
           this.content.replace(this.$('.o_kicker_main'));
       }
       this._toggleMenu({}, 'close');
-
+  },
+  _onImgChange: function () {
+    var $img = this.$el.find('.o_kicker_profile_image');
+    $img.attr('src', $img.attr('src') + '?t=' + new Date().getTime());
   },
 });
 

@@ -107,13 +107,16 @@ class KickerController(http.Controller):
         return partner.read(['id', 'name', 'email', 'main_kicker_id', 'tagline'])[0]
     
     @http.route('/kicker/json/update_profile', type='json', auth='user', methods=['POST'], csrf=False)
-    def update_profile(self, name, tagline, main_kicker, **kw):
+    def update_profile(self, name, tagline, main_kicker, avatar=None, **kw):
         partner = request.env.user.partner_id
-        partner.write({
+        vals = {
             'name': name,
             'tagline': tagline,
             'main_kicker_id': False if main_kicker == -1 else int(main_kicker),
-        })
+        }
+        if avatar:
+            vals['image'] = avatar
+        partner.write(vals)
         return {'success': True, 'player':partner.read(['id', 'name', 'email', 'main_kicker_id', 'tagline'])[0]}
 
     @http.route(['/kicker/json/players'], type='json', auth='user')
