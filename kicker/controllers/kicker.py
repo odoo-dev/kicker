@@ -78,8 +78,8 @@ class KickerController(http.Controller):
             'name': partner.name,
             'wins': partner.wins,
             'losses': partner.losses,
-            'teammates': teammates.read(['id', 'name']),
-            'nightmares': nightmares.read(['id', 'name']),
+            'teammates': teammates.read(['id', 'name', 'tagline']),
+            'nightmares': nightmares.read(['id', 'name', 'tagline']),
             'graph': [32.0/52*100, 35.0/53*100, 36.0/54*100, 36.0/56*100, 36.0/57*100]
         }
         return data
@@ -104,8 +104,18 @@ class KickerController(http.Controller):
         partner = request.env['res.partner'].browse(player_id)
         if not partner:
             raise werkzeug.exceptions.NotFound()
-        return partner.read(['id', 'name', 'email'])[0]
+        return partner.read(['id', 'name', 'email', 'main_kicker_id', 'tagline'])[0]
     
+    @http.route('/kicker/json/update_profile', type='json', auth='user', methods=['POST'], csrf=False)
+    def update_profile(self, name, tagline, main_kicker, **kw):
+        partner = request.env.user.partner_id
+        partner.write({
+            'name': name,
+            'tagline': tagline,
+            'main_kicker_id': False if main_kicker == -1 else int(main_kicker),
+        })
+        return {'success': True, 'player':partner.read(['id', 'name', 'email', 'main_kicker_id', 'tagline'])[0]}
+
     @http.route(['/kicker/json/players'], type='json', auth='user')
     def list_players(self, **kw):
         return request.env['res.partner'].search_read([('kicker_player', '=', True)], fields=['id', 'name'])
@@ -113,7 +123,7 @@ class KickerController(http.Controller):
     @http.route(['/kicker/json/kickers'], type='json', auth='user')
     def list_kickers(self, **kw):
         kickers = request.env['kicker.kicker'].sudo().search_read([], fields=['id', 'nickname'])
-        default = request.env.user.partner_id.main_kicker.id
+        default = request.env.user.partner_id.main_kicker_id.id
         return {'kickers': kickers, 'default': default}
 
     @http.route(['/kicker/score/submit'], type='json', auth='user', methods=['POST'], csrf=False)

@@ -64,19 +64,60 @@ var Dashboard = Widget.extend({
 var Profile = Widget.extend({
     template: 'Profile',
     xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
+    events: {
+        'click .o_kicker_edit': '_onEdit',
+        'click .o_kicker_save': '_onSave',
+    },
     init: function (parents, options) {
         this._super.apply(this, arguments);
-        this.unsaved_changes = false;
         this.player = undefined;
+        this.edit = false;
     },
     start: function() {
         var self = this;
-        return rpc.query({
-            route: '/kicker/json/player'
-        })
-        .then(function (player_data) {
+        return $.when(
+            rpc.query({
+                route: '/kicker/json/player/'
+            }),
+            rpc.query({
+                route: '/kicker/json/kickers',
+            }),
+            this._super.apply(this, arguments)
+        )
+        .then(function (player_data, kickers) {
             self.player = player_data;
+            self.kickers = kickers.kickers;
+            self.default_kicker = kickers.default;
             self.renderElement();
+        });
+    },
+    _onEdit: function (e) {
+        this.edit = true;
+        this.renderElement();   
+    },
+    _onSave: function (ev) {
+        var self = this;
+        var $form = $(ev.target).closest('form');
+        var formArray = $form.serializeArray();
+        var params = {};
+        for (var i = 0; i < formArray.length; i++){
+            params[formArray[i]['name']] = formArray[i]['value'];
+        }
+        return rpc.query({
+            route: '/kicker/json/update_profile',
+            params: params
+        }).then(function (result) {
+            if (result.errors) {
+                console.log(result.errors);
+            } else if (result.success) {
+                self.edit = false;
+                self.player = result.player;
+                self.renderElement();
+            }
+            return result;
+        }).fail(function (type, error) {
+            console.log(error.data.arguments);
+            return type, error;
         });
     },
 });

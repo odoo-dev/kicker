@@ -8,7 +8,8 @@ class ResPartner(models.Model):
     wins = fields.Integer(compute='_compute_stats')
     losses = fields.Integer(compute='_compute_stats')
     kicker_player = fields.Boolean()
-    main_kicker = fields.Many2one('kicker.kicker', 'Default Kicker')
+    main_kicker_id = fields.Many2one('kicker.kicker', 'Default Kicker')
+    tagline = fields.Char()
 
     @api.depends('kicker_team_ids')
     def _compute_stats(self):
