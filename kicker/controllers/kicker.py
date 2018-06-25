@@ -110,7 +110,7 @@ class KickerController(http.Controller):
         vals = {
             'name': name,
             'tagline': tagline,
-            'main_kicker_id': False if main_kicker == -1 else int(main_kicker),
+            'main_kicker_id': False if int(main_kicker) == -1 else int(main_kicker),
         }
         if avatar:
             vals['image'] = avatar

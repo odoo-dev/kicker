@@ -112,7 +112,7 @@ App Pages Templates
         </div>
       </div>
     </div>
-    <a href="/kicker/score" class="fab" data-router="true">+</a>
+    <a href="/kicker/score" class="fab bg-primary" data-router="true">+</a>
     <div class="offline-toast hidden">
         You are currently off-line.
         <btn class="btn btn-xs btn-default"

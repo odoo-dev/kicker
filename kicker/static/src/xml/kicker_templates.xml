@@ -20,7 +20,7 @@
                             </div>
                         </div>
                         <div class="panel-footer">
-                            <button class="btn btn-primary btn-lg btn-block">Add Score</button>
+                            <a href="/kicker/score" data-router="true" class="btn btn-primary btn-lg btn-block">Add Score</a>
                         </div>
                     </div>
                     <label>Your Stats</label>

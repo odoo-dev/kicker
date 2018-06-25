@@ -89,8 +89,8 @@ body {
 
 .o_kicker_app {
     display: grid;
-    grid-template-columns: 250px 1fr 3em;
-    grid-template-rows: @navbar-height 1fr;
+    grid-template-columns: 250px 1fr;
+    grid-template-rows: @navbar-height 1fr 0em;
     grid-template-areas: "topbar topbar"
                          "sidebar main"
                          "toast toast";
@@ -252,7 +252,6 @@ body {
 .fab {
   width: 70px;
   height: 70px;
-  background-color: #21b799;
   border-radius: 50%;
   box-shadow: 0 6px 10px 0 #666;
   transition: all 0.1s ease-in-out;
@@ -270,6 +269,6 @@ body {
     box-shadow: 0 6px 14px 0 #666;
     transform: scale(1.05);
     text-decoration: none;
-    color: inherit;
+    color: white;
   }
 }
