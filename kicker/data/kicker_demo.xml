@@ -4,11 +4,16 @@
 
         <!-- kickers -->
         <record id="kicker_gr" model="kicker.kicker">
-            <field name="nickname">Kicker of Lunchroom in GR</field>
+            <field name="nickname">GR North</field>
             <field name="location">San Grand Rosiere</field>
         </record>
 
-        <record id="kicker_gr" model="kicker.ping">
+        <record id="kicker_gr_south" model="kicker.kicker">
+            <field name="nickname">GR South</field>
+            <field name="location">Rue des Bourlottes</field>
+        </record>
+
+        <record id="kicker_gr_ping1" model="kicker.ping">
             <field name="kicker_id" ref="kicker_gr"/>
             <field name="ip_address">0.0.0.0</field>
             <field name="available" eval="True"/>
@@ -19,6 +24,8 @@
             <field name="name">Eloïse</field>
             <field name="login">elo</field>
             <field name="password">elo</field>
+            <field name="email">elo@odoo.com</field>
+            <field name="kicker_player" eval="True"/>
             <field name="groups_id" eval="[(6,0,[ref('base.group_portal')])]"/>
             <field name="image" type="base64" file="kicker/static/img/elo.png"/>
         </record>
@@ -27,6 +34,8 @@
             <field name="name">Martin</field>
             <field name="login">mat</field>
             <field name="password">mat</field>
+            <field name="email">mat@odoo.com</field>
+            <field name="kicker_player" eval="True"/>
             <field name="groups_id" eval="[(6,0,[ref('base.group_portal')])]"/>
             <field name="image" type="base64" file="kicker/static/img/mat.png"/>
         </record>
@@ -35,6 +44,8 @@
             <field name="name">Jérôme</field>
             <field name="login">jem</field>
             <field name="password">jem</field>
+            <field name="email">jem@odoo.com</field>
+            <field name="kicker_player" eval="True"/>
             <field name="groups_id" eval="[(6,0,[ref('base.group_portal')])]"/>
             <field name="image" type="base64" file="kicker/static/img/jem.png"/>
         </record>
@@ -43,6 +54,8 @@
             <field name="name">Benjamin</field>
             <field name="login">bst</field>
             <field name="password">bst</field>
+            <field name="email">bst@odoo.com</field>
+            <field name="kicker_player" eval="True"/>
             <field name="groups_id" eval="[(6,0,[ref('base.group_portal')])]"/>
             <field name="image" type="base64" file="kicker/static/img/bst.jpeg"/>
         </record>
@@ -51,6 +64,8 @@
             <field name="name">Damien</field>
             <field name="login">dbo</field>
             <field name="password">dbo</field>
+            <field name="email">dbo@odoo.com</field>
+            <field name="kicker_player" eval="True"/>
             <field name="groups_id" eval="[(6,0,[ref('base.group_portal')])]"/>
             <field name="image" type="base64" file="kicker/static/img/dbo.jpeg"/>
         </record>

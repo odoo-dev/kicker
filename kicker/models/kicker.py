@@ -80,8 +80,8 @@ class KickerTeam(models.Model):
     _name = 'kicker.team'
     _description = 'Kicker Team'
 
-    name = fields.Char(string='Nickname', required=True)
-    long_name = fields.Char(compute='_compute_long_name', string='Players\' Names')
+    nickname = fields.Char(string='Nickname')
+    name = fields.Char(compute='_compute_name', string='Players\' Names', store=True)
     player_ids = fields.Many2many('res.partner', string='Players', relation='kicker_team_res_partner_rel')
     score_ids = fields.One2many('kicker.team.score', 'team_id')
     wins = fields.Integer(compute='_compute_stats', store=True)

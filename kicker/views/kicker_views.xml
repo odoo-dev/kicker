@@ -110,7 +110,7 @@
         <field name="arch" type="xml">
             <tree string="Teams">
                 <field name="name"/>
-                <field name="long_name"/>
+                <field name="nickname"/>
                 <field name="wins"/>
                 <field name="losses"/>
             </tree>
@@ -137,6 +137,33 @@
                     </field>
                 </group>
             </form>
+        </field>
+    </record>
+
+    <!--
+        res.partner Views
+    -->
+    <record id="res_partner_form_inherit_kicker" model="ir.ui.view">
+        <field name="name">res.partner.form.inherit.kicker</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form" />
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Kicker">
+                    <group>
+                        <group>
+                            <field name="kicker_player"/>
+                            <field name="tagline"/>
+                            <field name="main_kicker_id"/>
+                        </group>
+                        <group>
+                            <field name="wins"/>
+                            <field name="losses"/>
+                        </group>
+                        <field name="kicker_team_ids"/>
+                    </group>
+                </page>
+            </xpath>
         </field>
     </record>
 
@@ -169,6 +196,16 @@
         <field name="res_model">kicker.team</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="kicker_player_action_list" model="ir.actions.act_window">
+        <field name="name">Players</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('kicker_player', '=', True)]</field>
+        <field name="context">{'default_kicker_player': True}</field>
     </record>
 
     <!--
@@ -209,4 +246,11 @@
         parent="kicker_menu_root"
         action="kicker_team_action_list"
         sequence="20"/>
+    
+    <menuitem
+        id="kicker_menu_partner_list"
+        name="Players"
+        parent="kicker_menu_root"
+        action="kicker_player_action_list"
+        sequence="25"/>
 </odoo>
