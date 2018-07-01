@@ -80,7 +80,7 @@ class KickerController(http.Controller):
             'losses': partner.losses,
             'teammates': teammates.read(['id', 'name', 'tagline']),
             'nightmares': nightmares.read(['id', 'name', 'tagline']),
-            'graph': [32.0/52*100, 35.0/53*100, 36.0/54*100, 36.0/56*100, 36.0/57*100]
+            'graph': [58, 69, 61, 85, 89]
         }
         return data
 

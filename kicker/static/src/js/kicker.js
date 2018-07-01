@@ -16,24 +16,24 @@ var Dashboard = Widget.extend({
     xmlDependencies: ['/kicker/static/src/xml/kicker_templates.xml'],
     init: function () {
         this.chartData = {
-          // A labels array that can contain any sort of values
-          labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'],
-          // Our series array that contains series objects or in this case series data arrays
-          series: [
-          ]
-        };
-        this.chartOptions = {
-            axisX: {
-                showGrid: false,
+            type: 'line',
+            data: {
+                labels: ['W1', 'W2', 'W3', 'W4', 'W5'],
+                datasets: [{
+                    label: 'Win/Loss Ratio',
+                    data: [1,1,1,1,1],
+                }]
             },
-            axisY: {
-                showGrid: true,
-                showLabel: true,
-                low: 0,
-                high: 100,
-                ticks: [0, 25, 50, 75, 100],
-                type: Chartist.FixedScaleAxis,
-            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            min: 0,
+                            max: 100,
+                        }
+                    }]
+                }
+            }
         };
     },
     start: function () {
@@ -49,14 +49,14 @@ var Dashboard = Widget.extend({
                 self.losses = data.losses;
                 self.teammates = data.teammates;
                 self.nightmares = data.nightmares;
-                self.chartData.series = [data.graph];
+                self.chartData.data.datasets[0].data = data.graph;
                 self.name = data.name;
                 self.renderElement();            
             });
     },
     renderElement: function () {
         var result = this._super.apply(this, arguments);
-        new Chartist.Line(this.$('.ct-chart')[0], this.chartData, this.chartOptions);
+        new Chart(this.$('#o_kicker_main_chart')[0].getContext('2d'), this.chartData);
         return result;
     }    
 });
